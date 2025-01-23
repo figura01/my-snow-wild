@@ -1,0 +1,72 @@
+services:
+  backend:
+    image: snowwild/backend-sw
+    command: sh -c "npm run build && npm run startjs"
+    ports:
+      - 4001:4000
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://backend:4000/graphql?query=%7B__typename%7D -H 'Apollo-Require-Preflight: true' || exit 1",
+        ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    depends_on:
+      db:
+        condition: service_healthy
+  frontend:
+    image: snowwild/frontend-sw
+    command: sh -c "npm run build && npm run start"
+    ports:
+      - 3001:3000
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    env_file:
+      - ./.env
+  db:
+    image: postgres:15
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d snowwild -U postgres"]
+      interval: 5s
+      timeout: 40s
+      retries: 15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: snowwild
+    ports:
+      - 5433:5432
+    volumes:
+      - snowwild-data-production:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - 8081:8080
+  nginx:
+    image: nginx:1.21.3
+    depends_on:
+      - backend
+      - frontend
+      - db
+      - adminer
+    restart: always
+    ports:
+      - ${GATEWAY_PORT:-8003}:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./logs:/var/log/nginx
+# On aura un serveur front et non un dossier à partager
+volumes:
+  snowwild-data-production:
