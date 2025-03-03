@@ -1,6 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  images: {
+    domains: [
+      'localhost',
+      'http://localhost:6100',
+      'http://localhost:6100/uploads'
+    ],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "6100",
+        pathname: "/uploads/*",
+      },
+    ]
+  }, 
 
   // images: {
   //   remotePatterns: [

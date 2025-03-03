@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT;
 app.use(cors());
 app.use('/uploads', express.static('uploads'));
 

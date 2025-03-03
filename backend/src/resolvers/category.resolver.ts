@@ -13,8 +13,13 @@ export default class CategoryResolver {
   }
 
   @Query(() => Category)
-  async findCategory(@Arg('id') id: string) {
-    return await new CategoryService().findCategory(id)
+  async findCategoryById(@Arg('id') id: string) {
+    return await new CategoryService().findCategoryById(id)
+  }
+
+  @Query(() => Category)
+  async findCategoryByName(@Arg('name') name: string) {
+    return await new CategoryService().findCategoryByName(name)
   }
 
   @Mutation(() => Category)
@@ -37,7 +42,7 @@ export default class CategoryResolver {
   async updateCategory(@Arg('data') data: AdminUpdateCategoryInput) {
     const { id } = data
 
-    const findedCategory = await new CategoryService().find(id)
+    const findedCategory = await new CategoryService().findCategoryById(id)
     console.log('findedCategory: ', findedCategory)
     // if(!findedCategory) {
     //   throw new Error("Error, This category id doesn't exist !")

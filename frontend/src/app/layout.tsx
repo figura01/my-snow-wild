@@ -2,13 +2,15 @@
 
 "use client";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import CartProvider from "@/contexts/CartContext";
+import { CartProvider } from "@/contexts/CartContext";
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import SiteHeader from "@/components/site-header";
 import TailwindIndicator from "@/components/tailwind-indicator";
 
 import "./globals.css";
+import Footer from "@/components/Footer";
+import { Toaster } from "@/components/ui/sonner";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -28,7 +30,7 @@ export default function RootLayout({
 }>) {
 
   const client = new ApolloClient({
-    uri: `${process.env.NEXT_PUBLIC_APOLLO_CLIENT_URI}`,
+    uri: `${process.env.NEXT_PUBLIC_BACK_URL}`,
     cache: new InMemoryCache({ addTypename: false }),
     credentials: "include",
   });
@@ -38,7 +40,7 @@ export default function RootLayout({
       <CartProvider>
           <html lang="en" suppressHydrationWarning>
             <head />
-            <body className={`flex flex-col h-screen justify-center items-center`}>
+            <body className={`flex flex-col h-full justify-center items-center`}>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="dark"
@@ -46,10 +48,14 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 <SiteHeader />
-                {children}
+                <main className="flex bg-yellow-100 w-full h-full">
+                  {children}
+                </main>
                 <TailwindIndicator />
-                <div>site-footer</div>
+                <Footer />
+                <Toaster />
               </ThemeProvider>
+              
             </body>
           </html>
       </CartProvider>      

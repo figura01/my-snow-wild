@@ -47,14 +47,14 @@ const MobileNav = () => {
                             <Button 
                                 variant={'default'} asChild 
                             >
-                                <Link href="/">
+                                <Link href="/auth/login">
                                     Login
                                 </Link>
                             </Button>
                             
                             
                             <Button variant={'outline'} asChild>
-                                <Link href="/">
+                                <Link href="/auth/register">
                                     Register
                                 </Link>
                             </Button>

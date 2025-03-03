@@ -30,15 +30,22 @@ export default class MaterialService {
     return material
   }
 
-  async listByCategory(id: string) {
+  async listByCategoryId(id: string) {
     return await this.db.find({
       where: { category: { id } },
       relations: { category: true },
     })
   }
 
+  async listByCategoryName(name: string) {
+    return await this.db.find({
+      where: { category: { name } },
+      relations: { category: true },
+    })
+  }
+
   async createMaterial(data: CreateMaterialInput) {
-    const categoryToLink = await new CategoryService().find(data?.category?.id)
+    const categoryToLink = await new CategoryService().findCategoryById(data?.category?.id)
     if (!categoryToLink) {
       throw new Error("La catégorie n'existe pas!")
     }
@@ -62,7 +69,7 @@ export default class MaterialService {
 
   async updateMaterial(id: string, data: Omit<UpdateMaterialInput, 'id'>) {
     if (!data.category) return null
-    const categoryToLink = await new CategoryService().find(data?.category.id)
+    const categoryToLink = await new CategoryService().findCategoryById(data?.category.id)
     const materialToUpdate = await this.findMaterialById(id)
     if (!materialToUpdate) {
       throw new Error('Error, material id not found!')

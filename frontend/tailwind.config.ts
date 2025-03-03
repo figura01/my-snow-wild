@@ -21,13 +21,10 @@ const config = {
 			'2xl': '6rem',
 		},
 		screens: {
-			DEFAULT: '100px',
-			xs: "340px",
-			sm: "640px",
-			md: "768px",
-			lg: "1024px",
-			xl: "1280px",
-			"2xl": "1536px",
+			sm: '640px',
+			md: '768px',
+			lg: '1024px',
+			xl: '1280px',
 		},
 	},
   	extend: {
@@ -94,7 +91,9 @@ const config = {
 		},
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+	require("tailwindcss-animate"),
+  ],
 } satisfies Config;
 
 export default config

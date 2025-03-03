@@ -37,7 +37,7 @@ services:
       - WDS_SOCKET_HOST=127.0.0.1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-      - NEXT_PUBLIC_IMAGE_URL=http://localhost:8000
+      - NEXT_PUBLIC_IMAGE_URL=http://localhost:6100
     env_file:
       - ./frontend/.env
   db:
@@ -69,11 +69,14 @@ services:
       - ./images/src:/app/src
       - ./images/uploads:/app/uploads
     ports:
-      - 8000:8000
+      - 6100:6100
     environment:
       - WDS_SOCKET_HOST=127.0.0.1
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - PORT=6100
+    env_file:
+      - ./images/.env
 
 volumes:
   snowwild-data:
