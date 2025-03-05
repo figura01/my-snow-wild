@@ -1,10 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { CartItemType, useCart } from "@/contexts/CartContext"
 import { Button } from "./ui/button"
 import { useState } from "react"
 
-const CartItem:React.FC = ({ cart } : {cart: CartItemType}) => {
+const CartItem:React.FC<CartItemType> = ({ cart } : {cart: CartItemType}) => {
     const { updateQuantity, addToCart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart()
     const [slectedSize, setSelectedSize ] = useState<string | null>(null)
     
