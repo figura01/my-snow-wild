@@ -60,6 +60,7 @@ export default class UserService {
   }
 
   async updateUser(infos: InputAdminUpdateUser, id: string) {
+    console.log('update user')
     const userToUpdate = (await this.findUser(id)) as User
     const userToSave = this.db.merge(userToUpdate, {
       ...infos,

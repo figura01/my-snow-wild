@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useContext } from 'react'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input"
 import { LOGIN } from '@/requests/queries/auth.queries'
 import { useLazyQuery } from '@apollo/client'
 import { toast } from "sonner";
+import { useRouter } from 'next/navigation'
+import { AuthContext } from '@/contexts/AuthContext'
 
 const formSchema = z.object({
     email: z.string().email({
@@ -29,6 +31,8 @@ const formSchema = z.object({
     })
   })
 const FormLogin: React.FC = () => {
+    const { updateUser } = useContext(AuthContext);
+    const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -59,6 +63,16 @@ const FormLogin: React.FC = () => {
                 toast.success('Logged in success', {
                     description: "Friday, February 10, 2023 at 5:57 PM",
                 })
+                updateUser({
+                    userId: data.login.id,
+                    email: data.login.email,
+                    role: data.login.role
+                })
+                if(data.login.role === "ADMIN") {
+                    router.push("/admin")
+                } else {
+                    router.push("/")
+                }
             },
             onError(error) {
                 console.log('error: ', error)

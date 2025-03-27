@@ -23,6 +23,7 @@ export default class UserResolver {
 
   @Query(() => UserWithoutPassword)
   async login(@Arg('infos') infos: InputLogin, @Ctx() ctx: MyContext) {
+    console.log("try to login !!!")
     const user = await new UserService().findUserByEmail(infos.email)
     if (!user) {
       throw new Error('Vérifiez vos informations')
@@ -92,10 +93,15 @@ export default class UserResolver {
     @Arg('infos') infos: InputAdminUpdateUser,
     @Arg('id') id: string
   ) {
-    const user = await new UserService().findUserByEmail(infos.email)
-    if (user) {
-      throw new Error('Cet email est déjà pris!')
-    }
+    const userToUpdate = await new UserService().findUserById(id)
+
+    if(userToUpdate?.email !== infos.email) {
+      const user = await new UserService().findUserByEmail(infos.email)
+      if (user) {
+        throw new Error('Cet email est déjà pris!') 
+      }
+    } 
+
     const hashPassword = await argon2.hash(infos.password)
     if (hashPassword) {
       infos.password = hashPassword
