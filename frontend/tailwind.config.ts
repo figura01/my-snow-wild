@@ -47,6 +47,10 @@ const config = {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
   			},
+			edit: {
+				DEFAULT: 'hsl(var(--edit))',
+				foreground: 'hsl(var(--edit-foreground))'
+			},
   			muted: {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'

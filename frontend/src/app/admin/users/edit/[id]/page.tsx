@@ -127,7 +127,11 @@ const AdminEditUser = () => {
     <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card className="md:w-[500px] md:mx-auto">
-            <CardHeader>Edit user</CardHeader>
+            <CardHeader
+              className="text-2xl text-center"
+            >
+              Edit user
+            </CardHeader>
             <CardContent>
               <FormField
                 control={form.control}
@@ -258,8 +262,20 @@ const AdminEditUser = () => {
               />
             
             </CardContent>
-            <CardFooter>
-              <Button type="submit">Submit</Button>
+            <CardFooter
+                className="flex gap-2"
+            >
+              <Button
+                className="w-full"
+                onClick={() => router.push("/admin/users")}
+              >
+                Back
+              </Button>
+              <Button 
+                type="submit"
+                className="w-full">
+                Submit
+              </Button>
             </CardFooter>
           </Card>
         </form>

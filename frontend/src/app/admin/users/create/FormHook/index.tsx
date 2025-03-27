@@ -270,8 +270,22 @@ export function FormHook() {
               />
             
             </CardContent>
-            <CardFooter>
-              <Button type="submit">Submit</Button>
+            <CardFooter
+              className="w-full gap-2"  
+            >
+              <Button 
+                type="button"
+                className="w-full"
+                onClick={() => router.push("/admin/users")}
+              >
+                Back
+              </Button>
+              <Button 
+                type="submit"
+                className="w-full"
+              >
+                Submit
+              </Button>
             </CardFooter>
           </Card>
         </form>

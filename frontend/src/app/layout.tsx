@@ -3,6 +3,7 @@
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthContext } from "@/contexts/AuthContext"; 
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import SiteHeader from "@/components/site-header";
@@ -13,7 +14,6 @@ import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import Cookies from 'js-cookie';
 import { useContext, useEffect } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
 import { usePathname } from 'next/navigation'
 import LayoutAdmin from "@/components/layouts/admin/LayoutAdmin";
 
@@ -95,8 +95,6 @@ export default function RootLayout({
                      
                     </>
                   )}
-                  
-                  
                 </ThemeProvider>
                 
               </body>

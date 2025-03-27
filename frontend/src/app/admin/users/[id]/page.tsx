@@ -40,7 +40,7 @@ const DetailUser = () => {
             className="md:w-[500px] md:mx-auto"
         >
             <CardHeader>
-                <h1>Detail user</h1>
+                <h1 className="text-2xl text-center">Detail user</h1>
                 {loading && (
                     <p>Loading....</p>
                 )}
@@ -56,14 +56,21 @@ const DetailUser = () => {
                     </div>
                 )}
             </CardContent>
-            <CardFooter>
+            <CardFooter
+                className="flex gap-2"
+            >
                 <Button
+                    className="w-full"
                     onClick={() => router.push("/admin/users")}
                 >Back</Button>
                 <Button
+                    className="w-full"
+                    variant="edit"
                     onClick={() => router.push(`/admin/users/edit/${id}`)}
                 >Edit</Button>
                 <Button
+                    className="w-full"
+                    variant="destructive"
                     onClick={() => router.push(`/admin/users/${id}/delete`)}
                 >Delete</Button>
             </CardFooter>

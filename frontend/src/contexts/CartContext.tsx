@@ -44,7 +44,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({children} : { childre
   const [cart, setCart] = React.useState<CartItemType[]>([]);
 
   useEffect(() => {
-    setCart(JSON.parse(sessionStorage.getItem('cart')) || [])
+    return setCart(JSON.parse(sessionStorage.getItem('cart') || '[]'));
   }, []);
 
   useEffect(() => {
