@@ -1,3 +1,7 @@
+export type Variant = { id: string; size: string; stock: number };
+
+export type SizeAvailability = { variantId: string; size: string; available: number };
+
 export type Category = {
   id: string;
   name: string;
@@ -13,7 +17,8 @@ export type Material = {
   description: string | null;
   imageUrl: string | null;
   dailyPriceCents: number;
-  stock: number;
+  totalStock: number;
+  variants: Variant[];
   isActive: boolean;
   category: { id: string; name: string; slug: string };
 };

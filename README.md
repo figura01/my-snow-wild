@@ -13,6 +13,14 @@ Réécriture personnelle du projet réalisé en équipe de 5 pendant ma formatio
 | Présentation | Next.js (App Router), React, Tailwind CSS, composants façon shadcn/ui, Apollo Client |
 | Métier (API) | Node.js, Express, Apollo Server, GraphQL, TypeGraphQL |
 | Accès aux données | TypeORM, PostgreSQL |
+
+### Modèle de données
+
+- `Category` 1—n `Material` (référence : nom, prix par jour, visibilité)
+- `Material` 1—n `MaterialVariant` (taille + stock de cette taille)
+- `Reservation` (période du … au …, statut, total) 1—n `ReservationItem` (taille réservée, quantité, prix figé)
+
+Disponible sur une période = stock de la taille − quantités des réservations `PENDING`/`PAID` qui chevauchent la période.
 | Paiement | Stripe (mode test) — à venir |
 | Infra | Docker Compose (dev), VPS + Caddy (prod) — à venir |
 
@@ -59,8 +67,8 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 
 - [x] Socle : Docker Compose, PostgreSQL, API GraphQL, front Next.js
 - [x] Authentification JWT, rôles ADMIN / USER, layouts USER et ADMIN
-- [x] Catégories et matériels (références + exemplaires en stock), CRUD admin
-- [ ] Catalogue et recherche par nom et par plage de dates
+- [x] Catégories et matériels : références, tailles et stock par taille, CRUD admin
+- [x] Catalogue et recherche par nom, catégorie et plage de dates (disponibilité par taille)
 - [ ] Panier (Zustand, persistant en localStorage)
 - [ ] Récapitulatif, facturation et paiement Stripe (mode test)
 - [ ] Réservations : consultation côté admin

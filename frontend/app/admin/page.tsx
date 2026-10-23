@@ -5,15 +5,15 @@ export default async function AdminDashboard() {
   const { me, categories, adminMaterials } = await serverGraphql<{
     me: { firstName: string; lastName: string } | null;
     categories: { id: string }[];
-    adminMaterials: { stock: number }[];
-  }>("{ me { firstName lastName } categories { id } adminMaterials { stock } }");
+    adminMaterials: { totalStock: number }[];
+  }>("{ me { firstName lastName } categories { id } adminMaterials { totalStock } }");
 
   const stats = [
     { label: "Catégories", value: categories.length, href: "/admin/categories" },
     { label: "Références de matériel", value: adminMaterials.length, href: "/admin/materials" },
     {
       label: "Exemplaires en stock",
-      value: adminMaterials.reduce((sum, m) => sum + m.stock, 0),
+      value: adminMaterials.reduce((sum, m) => sum + m.totalStock, 0),
       href: "/admin/materials",
     },
   ];

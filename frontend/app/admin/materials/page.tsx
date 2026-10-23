@@ -23,7 +23,7 @@ export default async function MaterialsPage() {
               <th className="px-4 py-3">Référence</th>
               <th className="px-4 py-3">Catégorie</th>
               <th className="px-4 py-3">Prix / jour</th>
-              <th className="px-4 py-3">Stock</th>
+              <th className="px-4 py-3">Tailles (stock)</th>
               <th className="px-4 py-3">Statut</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -39,7 +39,12 @@ export default async function MaterialsPage() {
                 <td className="px-4 py-3 font-medium">{material.name}</td>
                 <td className="px-4 py-3">{material.category.name}</td>
                 <td className="px-4 py-3">{formatPrice(material.dailyPriceCents)}</td>
-                <td className="px-4 py-3">{material.stock}</td>
+                <td className="px-4 py-3">
+                  <span className="font-semibold">{material.totalStock}</span>
+                  <span className="block text-xs text-muted">
+                    {material.variants.map((v) => `${v.size} : ${v.stock}`).join(" · ")}
+                  </span>
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={

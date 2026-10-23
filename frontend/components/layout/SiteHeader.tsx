@@ -15,6 +15,9 @@ export async function SiteHeader() {
           SNOW<span className="text-glacier">WILD</span>
         </Link>
         <nav className="flex items-center gap-2">
+          <Link href="/catalogue" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            Catalogue
+          </Link>
           {user ? (
             <>
               <span className="hidden text-sm text-muted sm:inline">

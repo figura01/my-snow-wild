@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 // --- Champs partagés -------------------------------------------------------
 
 export const CATEGORY_FIELDS = `id name slug description materialCount`;
-export const MATERIAL_FIELDS = `id name slug description imageUrl dailyPriceCents stock isActive category { id name slug }`;
+export const MATERIAL_FIELDS = `id name slug description imageUrl dailyPriceCents totalStock isActive variants { id size stock } category { id name slug }`;
 
 // --- Mutations (composants client) ----------------------------------------
 

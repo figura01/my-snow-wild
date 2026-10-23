@@ -1,4 +1,6 @@
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
   IsBoolean,
   IsInt,
   IsOptional,
@@ -8,8 +10,9 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateNested,
 } from "class-validator";
-import { Field, InputType, Int } from "type-graphql";
+import { Field, ID, InputType, Int } from "type-graphql";
 
 @InputType()
 export class CategoryInput {
@@ -22,6 +25,25 @@ export class CategoryInput {
   @IsOptional()
   @MaxLength(500)
   description?: string;
+}
+
+@InputType()
+export class VariantInput {
+  @Field(() => ID, { nullable: true, description: "Absent pour une nouvelle taille." })
+  @IsOptional()
+  @IsUUID("4")
+  id?: string;
+
+  @Field()
+  @MinLength(1, { message: "Chaque taille doit avoir un libellé." })
+  @MaxLength(40)
+  size: string;
+
+  @Field(() => Int)
+  @IsInt()
+  @Min(0, { message: "Le stock ne peut pas être négatif." })
+  @Max(10_000)
+  stock: number;
 }
 
 @InputType()
@@ -47,11 +69,11 @@ export class MaterialInput {
   @Max(100_000_00)
   dailyPriceCents: number;
 
-  @Field(() => Int)
-  @IsInt()
-  @Min(0, { message: "Le stock ne peut pas être négatif." })
-  @Max(10_000)
-  stock: number;
+  @Field(() => [VariantInput], { description: "Tailles et stock par taille (au moins une)." })
+  @ArrayMinSize(1, { message: "Ajoute au moins une taille (ou « Taille unique »)." })
+  @ArrayMaxSize(40)
+  @ValidateNested({ each: true })
+  variants: VariantInput[];
 
   @Field({ defaultValue: true })
   @IsBoolean()

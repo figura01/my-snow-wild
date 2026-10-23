@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { newRow, SizesEditor, type SizeRow } from "./SizesEditor";
 import { CREATE_MATERIAL, UPDATE_MATERIAL } from "@/lib/graphql/catalog";
 import type { Category, Material } from "@/lib/types";
 
@@ -20,6 +21,11 @@ export function MaterialForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [sizes, setSizes] = useState<SizeRow[]>(() =>
+    material?.variants.length
+      ? material.variants.map((v) => ({ key: v.id, id: v.id, size: v.size, stock: v.stock }))
+      : [newRow("Taille unique", 1)],
+  );
   const [save, { loading }] = useMutation(material ? UPDATE_MATERIAL : CREATE_MATERIAL);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -33,7 +39,7 @@ export function MaterialForm({
       description: String(form.get("description") ?? "") || null,
       imageUrl: String(form.get("imageUrl") ?? "") || null,
       dailyPriceCents: Math.round(price * 100),
-      stock: Number(form.get("stock") ?? 0),
+      variants: sizes.map((row) => ({ id: row.id ?? null, size: row.size, stock: row.stock })),
       isActive: form.get("isActive") === "on",
       categoryId: String(form.get("categoryId") ?? ""),
     };
@@ -60,7 +66,7 @@ export function MaterialForm({
         <Label htmlFor="name">Nom de la référence</Label>
         <Input id="name" name="name" defaultValue={material?.name} required minLength={2} maxLength={120} />
       </div>
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="categoryId">Catégorie</Label>
           <Select id="categoryId" name="categoryId" defaultValue={material?.category.id} required>
@@ -82,11 +88,8 @@ export function MaterialForm({
             required
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="stock">Exemplaires en stock</Label>
-          <Input id="stock" name="stock" type="number" step="1" min="0" defaultValue={material?.stock ?? 1} required />
-        </div>
       </div>
+      <SizesEditor rows={sizes} onChange={setSizes} />
       <div className="flex flex-col gap-2">
         <Label htmlFor="description">Description (facultatif)</Label>
         <Textarea id="description" name="description" defaultValue={material?.description ?? ""} maxLength={2000} />

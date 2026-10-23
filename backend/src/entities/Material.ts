@@ -5,16 +5,17 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Category } from "./Category";
+import { MaterialVariant } from "./MaterialVariant";
 
-// Une référence produit (ex. « Ski All Mountain 160 cm ») et le nombre
-// d'exemplaires identiques disponibles à la location.
+// Une référence produit (ex. « Ski All Mountain »). Le stock est géré
+// par taille, dans MaterialVariant.
 @ObjectType()
 @Entity()
-@Check(`"stock" >= 0`)
 @Check(`"dailyPriceCents" >= 0`)
 export class Material {
   @Field(() => ID)
@@ -42,9 +43,13 @@ export class Material {
   @Column({ type: "int" })
   dailyPriceCents: number;
 
-  @Field(() => Int, { description: "Nombre d'exemplaires en stock." })
-  @Column({ type: "int", default: 0 })
-  stock: number;
+  // Tailles disponibles et stock par taille (chargées avec le matériel).
+  @Field(() => [MaterialVariant])
+  @OneToMany(() => MaterialVariant, (variant) => variant.material, {
+    cascade: true,
+    eager: true,
+  })
+  variants: MaterialVariant[];
 
   @Field({ description: "Visible dans le catalogue public." })
   @Column({ default: true })

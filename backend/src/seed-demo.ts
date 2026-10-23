@@ -5,41 +5,47 @@ import "reflect-metadata";
 import { AppDataSource } from "./data-source";
 import { Category } from "./entities/Category";
 import { Material } from "./entities/Material";
+import { MaterialVariant } from "./entities/MaterialVariant";
 import { slugify } from "./utils/slugify";
 
-const catalog: Record<string, { name: string; price: number; stock: number; description: string }[]> = {
+type Item = { name: string; price: number; description: string; sizes: Record<string, number> };
+
+export const DEMO_CATALOG: Record<string, Item[]> = {
   Skis: [
-    { name: "Ski All Mountain 160 cm", price: 25, stock: 8, description: "Polyvalent, pour skier sur toutes les pistes." },
-    { name: "Ski piste Performance 170 cm", price: 32, stock: 5, description: "Précis et nerveux, pour les skieurs confirmés." },
-    { name: "Ski junior 120 cm", price: 15, stock: 6, description: "Léger et maniable, pour les enfants." },
+    { name: "Ski All Mountain", price: 25, description: "Polyvalent, pour skier sur toutes les pistes.", sizes: { "150 cm": 3, "160 cm": 4, "170 cm": 2 } },
+    { name: "Ski piste Performance", price: 32, description: "Précis et nerveux, pour les skieurs confirmés.", sizes: { "165 cm": 2, "175 cm": 2 } },
+    { name: "Ski junior", price: 15, description: "Léger et maniable, pour les enfants.", sizes: { "100 cm": 2, "120 cm": 3, "130 cm": 2 } },
   ],
   Snowboards: [
-    { name: "Snowboard Freestyle 152 cm", price: 28, stock: 4, description: "Souple, idéal pour le snowpark." },
-    { name: "Snowboard All Mountain 158 cm", price: 30, stock: 4, description: "Stable sur piste comme en poudreuse." },
+    { name: "Snowboard Freestyle", price: 28, description: "Souple, idéal pour le snowpark.", sizes: { "148 cm": 2, "152 cm": 2 } },
+    { name: "Snowboard All Mountain", price: 30, description: "Stable sur piste comme en poudreuse.", sizes: { "154 cm": 2, "158 cm": 2, "162 cm": 1 } },
   ],
   Chaussures: [
-    { name: "Chaussures de ski confort", price: 12, stock: 10, description: "Chaussant large et chaud." },
-    { name: "Boots de snowboard", price: 12, stock: 6, description: "Laçage rapide, bon maintien." },
+    { name: "Chaussures de ski confort", price: 12, description: "Chaussant large et chaud.", sizes: { "38": 2, "40": 3, "42": 3, "44": 2, "46": 1 } },
+    { name: "Boots de snowboard", price: 12, description: "Laçage rapide, bon maintien.", sizes: { "39": 2, "41": 2, "43": 2 } },
   ],
   Casques: [
-    { name: "Casque adulte avec visière", price: 8, stock: 12, description: "Visière intégrée, réglage molette." },
-    { name: "Casque enfant", price: 6, stock: 8, description: "Léger et ajustable." },
+    { name: "Casque adulte avec visière", price: 8, description: "Visière intégrée, réglage molette.", sizes: { S: 3, M: 5, L: 4 } },
+    { name: "Casque enfant", price: 6, description: "Léger et ajustable.", sizes: { XS: 4, S: 4 } },
   ],
-  "Bâtons": [{ name: "Bâtons de ski aluminium", price: 4, stock: 15, description: "Légers et résistants." }],
-  Accessoires: [{ name: "Masque de ski", price: 5, stock: 10, description: "Écran anti-buée, protection UV." }],
+  "Bâtons": [
+    { name: "Bâtons de ski aluminium", price: 4, description: "Légers et résistants.", sizes: { "110 cm": 4, "120 cm": 6, "130 cm": 5 } },
+  ],
+  Accessoires: [
+    { name: "Masque de ski", price: 5, description: "Écran anti-buée, protection UV.", sizes: { "Taille unique": 10 } },
+  ],
 };
 
 async function main() {
   await AppDataSource.initialize();
   const categories = AppDataSource.getRepository(Category);
   const materials = AppDataSource.getRepository(Material);
+  const variants = AppDataSource.getRepository(MaterialVariant);
 
-  for (const [categoryName, items] of Object.entries(catalog)) {
+  for (const [categoryName, items] of Object.entries(DEMO_CATALOG)) {
     let category = await categories.findOneBy({ name: categoryName });
     if (!category) {
-      category = await categories.save(
-        categories.create({ name: categoryName, slug: slugify(categoryName) }),
-      );
+      category = await categories.save(categories.create({ name: categoryName, slug: slugify(categoryName) }));
     }
     for (const item of items) {
       const slug = slugify(item.name);
@@ -50,9 +56,11 @@ async function main() {
           slug,
           description: item.description,
           dailyPriceCents: item.price * 100,
-          stock: item.stock,
           isActive: true,
           category,
+          variants: Object.entries(item.sizes).map(([size, stock], position) =>
+            variants.create({ size, stock, position }),
+          ),
         }),
       );
     }
@@ -62,7 +70,9 @@ async function main() {
   await AppDataSource.destroy();
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
