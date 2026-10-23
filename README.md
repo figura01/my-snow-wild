@@ -49,6 +49,9 @@ docker compose up --build
 - API / Apollo Sandbox : http://localhost:4000/graphql
 - pgAdmin : http://localhost:5050 (serveur : hôte `db`, port `5432`, identifiants `POSTGRES_*`)
 
+Données de démonstration (catégories et matériels) :
+`docker compose up -d --build backend` puis `docker compose exec backend npm run seed:demo`.
+
 Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local :
 `cd backend && npm install`, puis `cd ../frontend && npm install`.
 
@@ -56,7 +59,7 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 
 - [x] Socle : Docker Compose, PostgreSQL, API GraphQL, front Next.js
 - [x] Authentification JWT, rôles ADMIN / USER, layouts USER et ADMIN
-- [ ] Catégories et matériels (références + exemplaires en stock), CRUD admin
+- [x] Catégories et matériels (références + exemplaires en stock), CRUD admin
 - [ ] Catalogue et recherche par nom et par plage de dates
 - [ ] Panier (Zustand, persistant en localStorage)
 - [ ] Récapitulatif, facturation et paiement Stripe (mode test)

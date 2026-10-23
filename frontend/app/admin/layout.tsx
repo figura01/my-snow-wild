@@ -5,7 +5,7 @@ import { LogoutButton } from "@/components/layout/LogoutButton";
 import { getSessionUser } from "@/lib/server/session";
 
 export const metadata: Metadata = {
-  title: "Back-office",
+  title: { default: "Back-office", template: "%s | Back-office Snow Wild" },
   robots: { index: false, follow: false },
 };
 
@@ -14,8 +14,8 @@ export const dynamic = "force-dynamic";
 
 const nav = [
   { href: "/admin", label: "Tableau de bord" },
-  { href: "/admin/materials", label: "Matériels", soon: true },
-  { href: "/admin/categories", label: "Catégories", soon: true },
+  { href: "/admin/materials", label: "Matériels" },
+  { href: "/admin/categories", label: "Catégories" },
   { href: "/admin/reservations", label: "Réservations", soon: true },
   { href: "/admin/users", label: "Utilisateurs", soon: true },
 ];
