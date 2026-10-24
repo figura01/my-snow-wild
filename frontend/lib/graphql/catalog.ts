@@ -63,3 +63,17 @@ export const QUOTE_CART = gql`
     }
   }
 `;
+
+// --- Commande ---------------------------------------------------------------
+
+export const CREATE_RESERVATION = gql`
+  mutation CreateReservation($data: CheckoutInput!) {
+    createReservation(data: $data) { reservationId paymentUrl }
+  }
+`;
+
+export const CONFIRM_PAYMENT = gql`
+  mutation ConfirmPayment($id: ID!, $sessionId: String) {
+    confirmPayment(id: $id, sessionId: $sessionId) { id status isExpired totalCents }
+  }
+`;

@@ -1,4 +1,4 @@
-import { In } from "typeorm";
+import { In, type EntityManager } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { MaterialVariant } from "../entities/MaterialVariant";
 import { parsePeriod } from "../utils/dates";
@@ -43,6 +43,7 @@ export async function buildQuote(
   startDate: string,
   endDate: string,
   requested: QuoteRequestItem[],
+  manager: EntityManager = AppDataSource.manager,
 ): Promise<Quote> {
   const period = parsePeriod(startDate, endDate);
   if (!period) throw badInput("Choisis les dates de location.");
@@ -57,13 +58,13 @@ export async function buildQuote(
   const ids = [...quantities.keys()];
 
   const variants = ids.length
-    ? await AppDataSource.getRepository(MaterialVariant).find({
+    ? await manager.getRepository(MaterialVariant).find({
         where: { id: In(ids) },
         relations: { material: true },
       })
     : [];
   const byId = new Map(variants.map((v) => [v.id, v]));
-  const reserved = await reservedQuantities(ids, period.start, period.end);
+  const reserved = await reservedQuantities(ids, period.start, period.end, manager);
 
   const lines: QuoteLine[] = ids.map((variantId) => {
     const quantity = quantities.get(variantId)!;

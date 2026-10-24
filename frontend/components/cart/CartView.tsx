@@ -179,10 +179,15 @@ export function CartView() {
         {quote && !quote.valid && (
           <p className="text-sm text-red-600">Corrigez les articles signalés pour continuer.</p>
         )}
-        <Button type="button" variant="accent" size="lg" disabled={!quote?.valid || loading}>
-          Passer la commande
-        </Button>
-        <p className="text-xs text-muted">Le paiement arrive à la prochaine étape.</p>
+        {quote?.valid && !loading ? (
+          <Link href="/commande" className={buttonVariants({ variant: "accent", size: "lg" })}>
+            Passer la commande
+          </Link>
+        ) : (
+          <Button type="button" variant="accent" size="lg" disabled>
+            Passer la commande
+          </Button>
+        )}
       </aside>
     </div>
   );

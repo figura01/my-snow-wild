@@ -73,8 +73,8 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Catégories et matériels : références, tailles et stock par taille, CRUD admin
 - [x] Catalogue et recherche par nom, catégorie et plage de dates (disponibilité par taille)
 - [x] Panier (Zustand, persistant en localStorage) avec devis recalculé par l'API
-- [ ] Récapitulatif, facturation et paiement Stripe (mode test)
-- [ ] Réservations : consultation côté admin
+- [~] Récapitulatif, facturation et paiement Stripe (mode test) — écrit, reste à tester
+- [~] Réservations : consultation côté admin — écrit, reste à tester
 - [ ] Utilisateurs : gestion côté admin
 - [ ] Tests (Jest, React Testing Library) et CI GitHub Actions
 - [ ] Déploiement sur le VPS (Docker, Caddy)

@@ -3,7 +3,7 @@ import { Arg, Field, ID, InputType, Int, ObjectType, Query, Resolver } from "typ
 import { buildQuote, MAX_LINES, MAX_QUANTITY_PER_LINE } from "../services/quote";
 
 @InputType()
-class CartItemInput {
+export class CartItemInput {
   @Field(() => ID)
   @IsUUID("4")
   variantId: string;

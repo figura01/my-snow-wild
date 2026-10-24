@@ -25,6 +25,11 @@ export const env = {
   },
   jwtSecret,
   frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000",
+  // Stripe est facultatif : sans clé, l'application utilise un paiement simulé.
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY || null,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || null,
+  },
   admin: {
     email: process.env.ADMIN_EMAIL,
     password: process.env.ADMIN_PASSWORD,

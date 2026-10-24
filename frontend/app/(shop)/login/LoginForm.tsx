@@ -19,7 +19,7 @@ const LOGIN = gql`
 
 type LoginResult = { login: { id: string; role: "ADMIN" | "USER" } };
 
-export function LoginForm() {
+export function LoginForm({ next }: { next: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [login, { loading }] = useMutation<LoginResult>(LOGIN);
@@ -34,7 +34,7 @@ export function LoginForm() {
           data: { email: String(form.get("email")), password: String(form.get("password")) },
         },
       });
-      router.push(data?.login.role === "ADMIN" ? "/admin" : "/");
+      router.push(next || (data?.login.role === "ADMIN" ? "/admin" : "/"));
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Connexion impossible.");

@@ -20,8 +20,8 @@ export enum ReservationStatus {
 
 registerEnumType(ReservationStatus, { name: "ReservationStatus" });
 
-// Statuts qui immobilisent du matériel sur la période.
-export const BLOCKING_STATUSES = [ReservationStatus.PENDING, ReservationStatus.PAID];
+// Une réservation non payée bloque le matériel pendant ce délai, puis le libère.
+export const PAYMENT_DELAY_MINUTES = 35;
 
 // Une réservation porte sur une seule période (du … au …, jours inclus)
 // et contient une ou plusieurs lignes de matériel.
@@ -48,6 +48,27 @@ export class Reservation {
   @Field(() => ReservationStatus)
   @Column({ type: "enum", enum: ReservationStatus, default: ReservationStatus.PENDING })
   status: ReservationStatus;
+
+  // --- Facturation ---------------------------------------------------------
+  @Field() @Column() billingFirstName: string;
+  @Field() @Column() billingLastName: string;
+  @Field() @Column() billingEmail: string;
+  @Field() @Column() billingPhone: string;
+  @Field() @Column() billingAddress: string;
+  @Field() @Column({ length: 10 }) billingPostalCode: string;
+  @Field() @Column() billingCity: string;
+
+  // --- Paiement ------------------------------------------------------------
+  @Field(() => Date, { nullable: true, description: "Fin du blocage si la réservation n'est pas payée." })
+  @Column({ type: "timestamptz", nullable: true })
+  expiresAt: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  @Column({ type: "timestamptz", nullable: true })
+  paidAt: Date | null;
+
+  @Column({ type: "varchar", nullable: true })
+  stripeSessionId: string | null;
 
   @Field(() => Int, { description: "Montant total en centimes." })
   @Column({ type: "int", default: 0 })

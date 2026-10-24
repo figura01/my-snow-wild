@@ -22,9 +22,9 @@ export async function SiteHeader() {
           <CartButton />
           {user ? (
             <>
-              <span className="hidden text-sm text-muted sm:inline">
-                Bonjour {user.firstName}
-              </span>
+              <Link href="/compte" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                Mon compte
+              </Link>
               {user.role === "ADMIN" && (
                 <Link href="/admin" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   Back-office

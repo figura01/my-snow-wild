@@ -16,7 +16,7 @@ const nav = [
   { href: "/admin", label: "Tableau de bord" },
   { href: "/admin/materials", label: "Matériels" },
   { href: "/admin/categories", label: "Catégories" },
-  { href: "/admin/reservations", label: "Réservations", soon: true },
+  { href: "/admin/reservations", label: "Réservations" },
   { href: "/admin/users", label: "Utilisateurs", soon: true },
 ];
 

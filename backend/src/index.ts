@@ -11,6 +11,9 @@ import { env } from "./config/env";
 import { AppDataSource } from "./data-source";
 import { AuthResolver } from "./resolvers/AuthResolver";
 import { CartResolver } from "./resolvers/CartResolver";
+import { ReservationResolver } from "./resolvers/ReservationResolver";
+import { stripeWebhookRouter } from "./stripe-webhook";
+import { paymentMode } from "./services/payment";
 import { CatalogResolver } from "./resolvers/CatalogResolver";
 import { CategoryResolver } from "./resolvers/CategoryResolver";
 import { MaterialResolver } from "./resolvers/MaterialResolver";
@@ -23,7 +26,7 @@ async function main() {
   await ensureAdmin();
 
   const schema = await buildSchema({
-    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver, CartResolver],
+    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver, CartResolver, ReservationResolver],
     authChecker,
     validate: true,
   });
@@ -40,6 +43,9 @@ async function main() {
     res.json({ status: "ok" });
   });
 
+  // Avant express.json() : le webhook Stripe a besoin du corps brut.
+  app.use(stripeWebhookRouter());
+
   app.use(
     "/graphql",
     cors({ origin: env.frontendUrl, credentials: true }),
@@ -49,7 +55,7 @@ async function main() {
   );
 
   app.listen(env.port, () => {
-    console.log(`[api] Prêt sur http://localhost:${env.port}/graphql`);
+    console.log(`[api] Prêt sur http://localhost:${env.port}/graphql (paiement : ${paymentMode})`);
   });
 }
 
