@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import path from "node:path";
 import { DataSource } from "typeorm";
 import { env } from "./config/env";
 import { Category } from "./entities/Category";
@@ -17,7 +18,10 @@ export const AppDataSource = new DataSource({
   database: env.database.name,
   entities: [User, Category, Material, MaterialVariant, Reservation, ReservationItem],
   // En développement, TypeORM aligne automatiquement les tables sur les entités.
-  // En production, on passera par des migrations versionnées.
+  // En production, jamais : le schéma évolue uniquement par des migrations
+  // versionnées (src/migrations), appliquées au démarrage de l'API.
   synchronize: !env.isProd,
+  migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],
+  migrationsRun: env.isProd,
   logging: false,
 });

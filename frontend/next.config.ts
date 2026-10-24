@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 const backendUrl = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  // Image de production minimale : Next ne copie que le nécessaire.
+  output: "standalone",
   // Le navigateur appelle /graphql sur le même domaine que le site ; Next relaie
   // vers l'API. Le cookie d'authentification reste ainsi « same-site ».
   async rewrites() {

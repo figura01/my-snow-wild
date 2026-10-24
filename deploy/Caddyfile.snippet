@@ -1,0 +1,17 @@
+# À ajouter au Caddyfile de /srv/vps-infra, puis : docker compose restart caddy
+# Remplace snowwild.example.com par ton (sous-)domaine, dont le DNS pointe vers le VPS.
+# Caddy obtient et renouvelle automatiquement le certificat HTTPS.
+
+snowwild.example.com {
+	encode gzip
+
+	# Notifications de paiement envoyées par Stripe : directement à l'API.
+	handle /stripe/* {
+		reverse_proxy backend:4000
+	}
+
+	# Tout le reste (pages et /graphql, relayé par Next.js) : le front.
+	handle {
+		reverse_proxy frontend:3000
+	}
+}

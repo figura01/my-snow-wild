@@ -76,5 +76,51 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [~] Récapitulatif, facturation et paiement Stripe (mode test) — écrit, reste à tester
 - [~] Réservations : consultation côté admin — écrit, reste à tester
 - [~] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous) — écrit, reste à tester
-- [ ] Tests (Jest, React Testing Library) et CI GitHub Actions
-- [ ] Déploiement sur le VPS (Docker, Caddy)
+- [~] CI GitHub Actions : TypeScript + build, images GHCR, déploiement SSH (activable) — tests Jest à venir
+- [~] Déploiement sur le VPS : images de prod, migrations, compose de prod et Caddy prêts (voir « Mise en production »)
+
+## Mise en production (VPS)
+
+Fichiers dans `deploy/` : `docker-compose.prod.yml`, `Caddyfile.snippet`, `.env.production.example`.
+
+### 1. Générer la migration initiale (une fois, en local)
+
+En production, TypeORM ne modifie jamais les tables tout seul : le schéma est créé
+par des migrations versionnées, appliquées au démarrage de l'API. La première se
+génère contre une base **vide** :
+
+```bash
+docker compose exec db createdb -U snowwild snowwild_migrations
+docker compose exec -e POSTGRES_DB=snowwild_migrations backend \
+  npm run migration:generate -- src/migrations/Init
+docker compose exec db dropdb -U snowwild snowwild_migrations
+```
+
+Le fichier apparaît dans `backend/src/migrations/` : committe-le. À chaque
+modification d'entité, même commande avec un autre nom (ex. `src/migrations/AddX`).
+
+### 2. Préparer le VPS
+
+```bash
+sudo mkdir -p /srv/snow-wild && cd /srv/snow-wild
+# y copier deploy/docker-compose.prod.yml et un .env rempli depuis deploy/.env.production.example
+docker network ls   # repérer le réseau du Caddy existant → PROXY_NETWORK dans le .env
+```
+
+Ajouter le bloc de `deploy/Caddyfile.snippet` au Caddyfile de `/srv/vps-infra`
+(avec ton domaine), puis `docker compose restart caddy`.
+
+### 3. Activer le déploiement automatique
+
+Dans le dépôt GitHub (Settings > Secrets and variables > Actions) :
+- secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (les mêmes que pour le portfolio) ;
+- variable `DEPLOY_ENABLED` = `true`.
+
+Chaque push sur `main` vérifie le code, publie les images sur GHCR puis met à jour le VPS.
+
+### 4. Stripe en production (mode test)
+
+Dans le tableau de bord Stripe, ajouter un endpoint webhook
+`https://<ton-domaine>/stripe/webhook` (événements `checkout.session.completed`
+et `checkout.session.expired`), puis renseigner `STRIPE_SECRET_KEY` et
+`STRIPE_WEBHOOK_SECRET` dans le `.env` du VPS.

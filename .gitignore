@@ -4,5 +4,6 @@ dist/
 .env
 .env.*
 !.env.example
+!deploy/.env.production.example
 .DS_Store
 *.log
