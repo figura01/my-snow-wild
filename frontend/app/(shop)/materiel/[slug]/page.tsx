@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AddToCart } from "@/components/cart/AddToCart";
 import { CategoryIcon } from "@/components/catalog/CategoryIcon";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -137,7 +138,18 @@ export default async function MaterialPage({ params, searchParams }: Props) {
             </p>
           )}
 
-          <p className="text-sm text-muted">L&apos;ajout au panier arrive à la prochaine étape.</p>
+          <AddToCart
+            material={{
+              materialId: material.id,
+              slug: material.slug,
+              name: material.name,
+              categorySlug: material.category.slug,
+              imageUrl: material.imageUrl,
+              dailyPriceCents: material.dailyPriceCents,
+            }}
+            sizes={sizes}
+            period={sizes && du && au ? { startDate: du, endDate: au } : null}
+          />
         </div>
       </div>
     </div>

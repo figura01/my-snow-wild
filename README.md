@@ -60,6 +60,9 @@ docker compose up --build
 Données de démonstration (catégories et matériels) :
 `docker compose up -d --build backend` puis `docker compose exec backend npm run seed:demo`.
 
+Les dépendances npm sont installées automatiquement au démarrage des conteneurs :
+après l'ajout d'un paquet, un simple `docker compose restart frontend` (ou `backend`) suffit.
+
 Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local :
 `cd backend && npm install`, puis `cd ../frontend && npm install`.
 
@@ -69,7 +72,7 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Authentification JWT, rôles ADMIN / USER, layouts USER et ADMIN
 - [x] Catégories et matériels : références, tailles et stock par taille, CRUD admin
 - [x] Catalogue et recherche par nom, catégorie et plage de dates (disponibilité par taille)
-- [ ] Panier (Zustand, persistant en localStorage)
+- [x] Panier (Zustand, persistant en localStorage) avec devis recalculé par l'API
 - [ ] Récapitulatif, facturation et paiement Stripe (mode test)
 - [ ] Réservations : consultation côté admin
 - [ ] Utilisateurs : gestion côté admin

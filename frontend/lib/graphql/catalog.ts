@@ -38,3 +38,28 @@ export const DELETE_MATERIAL = gql`
     deleteMaterial(id: $id)
   }
 `;
+
+// --- Panier -----------------------------------------------------------------
+
+export const QUOTE_CART = gql`
+  query QuoteCart($cart: CartInput!) {
+    quoteCart(cart: $cart) {
+      startDate
+      endDate
+      days
+      totalCents
+      valid
+      lines {
+        variantId
+        materialName
+        size
+        quantity
+        available
+        dailyPriceCents
+        lineTotalCents
+        ok
+        message
+      }
+    }
+  }
+`;

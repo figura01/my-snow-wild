@@ -10,6 +10,7 @@ import { buildContext, type Context } from "./auth/context";
 import { env } from "./config/env";
 import { AppDataSource } from "./data-source";
 import { AuthResolver } from "./resolvers/AuthResolver";
+import { CartResolver } from "./resolvers/CartResolver";
 import { CatalogResolver } from "./resolvers/CatalogResolver";
 import { CategoryResolver } from "./resolvers/CategoryResolver";
 import { MaterialResolver } from "./resolvers/MaterialResolver";
@@ -22,7 +23,7 @@ async function main() {
   await ensureAdmin();
 
   const schema = await buildSchema({
-    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver],
+    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver, CartResolver],
     authChecker,
     validate: true,
   });

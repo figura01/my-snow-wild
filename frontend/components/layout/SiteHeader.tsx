@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSessionUser } from "@/lib/server/session";
 import { buttonVariants } from "@/components/ui/button";
+import { CartButton } from "@/components/cart/CartButton";
 import { LogoutButton } from "./LogoutButton";
 
 // Layout USER : l'en-tête s'adapte selon que le visiteur est connecté,
@@ -18,6 +19,7 @@ export async function SiteHeader() {
           <Link href="/catalogue" className={buttonVariants({ variant: "ghost", size: "sm" })}>
             Catalogue
           </Link>
+          <CartButton />
           {user ? (
             <>
               <span className="hidden text-sm text-muted sm:inline">
