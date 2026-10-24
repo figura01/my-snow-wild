@@ -5,11 +5,12 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { DELETE_CATEGORY, DELETE_MATERIAL } from "@/lib/graphql/catalog";
+import { DELETE_CATEGORY, DELETE_MATERIAL, DELETE_USER } from "@/lib/graphql/catalog";
 
 const MUTATIONS = {
   category: DELETE_CATEGORY,
   material: DELETE_MATERIAL,
+  user: DELETE_USER,
 };
 
 // Bouton de suppression générique : confirmation, mutation, puis rafraîchissement

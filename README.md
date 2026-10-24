@@ -75,6 +75,6 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Panier (Zustand, persistant en localStorage) avec devis recalculé par l'API
 - [~] Récapitulatif, facturation et paiement Stripe (mode test) — écrit, reste à tester
 - [~] Réservations : consultation côté admin — écrit, reste à tester
-- [ ] Utilisateurs : gestion côté admin
+- [~] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous) — écrit, reste à tester
 - [ ] Tests (Jest, React Testing Library) et CI GitHub Actions
 - [ ] Déploiement sur le VPS (Docker, Caddy)

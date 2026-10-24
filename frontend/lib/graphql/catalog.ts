@@ -77,3 +77,16 @@ export const CONFIRM_PAYMENT = gql`
     confirmPayment(id: $id, sessionId: $sessionId) { id status isExpired totalCents }
   }
 `;
+
+// --- Utilisateurs (admin) -----------------------------------------------------
+
+export const UPDATE_USER_ROLE = gql`
+  mutation UpdateUserRole($id: ID!, $role: UserRole!) {
+    updateUserRole(id: $id, role: $role) { id role }
+  }
+`;
+export const DELETE_USER = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(id: $id)
+  }
+`;

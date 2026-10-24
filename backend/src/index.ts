@@ -12,6 +12,7 @@ import { AppDataSource } from "./data-source";
 import { AuthResolver } from "./resolvers/AuthResolver";
 import { CartResolver } from "./resolvers/CartResolver";
 import { ReservationResolver } from "./resolvers/ReservationResolver";
+import { UserAdminResolver } from "./resolvers/UserAdminResolver";
 import { stripeWebhookRouter } from "./stripe-webhook";
 import { paymentMode } from "./services/payment";
 import { CatalogResolver } from "./resolvers/CatalogResolver";
@@ -26,7 +27,7 @@ async function main() {
   await ensureAdmin();
 
   const schema = await buildSchema({
-    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver, CartResolver, ReservationResolver],
+    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver, CartResolver, ReservationResolver, UserAdminResolver],
     authChecker,
     validate: true,
   });

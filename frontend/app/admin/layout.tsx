@@ -17,7 +17,7 @@ const nav = [
   { href: "/admin/materials", label: "Matériels" },
   { href: "/admin/categories", label: "Catégories" },
   { href: "/admin/reservations", label: "Réservations" },
-  { href: "/admin/users", label: "Utilisateurs", soon: true },
+  { href: "/admin/users", label: "Utilisateurs" },
 ];
 
 // Layout ADMIN. Ce contrôle protège l'affichage des pages ; les données, elles,
