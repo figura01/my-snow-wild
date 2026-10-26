@@ -73,9 +73,9 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Catégories et matériels : références, tailles et stock par taille, CRUD admin
 - [x] Catalogue et recherche par nom, catégorie et plage de dates (disponibilité par taille)
 - [x] Panier (Zustand, persistant en localStorage) avec devis recalculé par l'API
-- [~] Récapitulatif, facturation et paiement Stripe (mode test) — écrit, reste à tester
-- [~] Réservations : consultation côté admin — écrit, reste à tester
-- [~] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous) — écrit, reste à tester
+- [x] Récapitulatif, facturation et paiement (simulé testé ; Stripe test prêt, à brancher avec les clés)
+- [x] Réservations : consultation côté admin, « Mon compte » côté client
+- [x] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous)
 - [~] CI GitHub Actions : TypeScript + build, images GHCR, déploiement SSH (activable) — tests Jest à venir
 - [~] Déploiement sur le VPS : images de prod, migrations, compose de prod et Caddy prêts (voir « Mise en production »)
 
