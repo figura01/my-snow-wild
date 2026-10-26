@@ -7,3 +7,6 @@ dist/
 !deploy/.env.production.example
 .DS_Store
 *.log
+
+# Cache TypeScript
+*.tsbuildinfo
