@@ -1,8 +1,8 @@
 # À ajouter au Caddyfile de /srv/vps-infra, puis : docker compose restart caddy
-# Remplace snowwild.example.com par ton (sous-)domaine, dont le DNS pointe vers le VPS.
+# Le DNS de snow-wild.laurent-vuillaume.ovh doit pointer vers le VPS (51.91.99.187).
 # Caddy obtient et renouvelle automatiquement le certificat HTTPS.
 
-snowwild.example.com {
+snow-wild.laurent-vuillaume.ovh {
 	encode gzip
 
 	# Notifications de paiement envoyées par Stripe : directement à l'API.
