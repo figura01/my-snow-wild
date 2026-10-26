@@ -69,8 +69,8 @@ jobs:
           file: ${{ matrix.app }}/Dockerfile.prod
           push: true
           tags: |
-            ghcr.io/figura01/snow-wild-${{ matrix.app }}:latest
-            ghcr.io/figura01/snow-wild-${{ matrix.app }}:${{ github.sha }}
+            ghcr.io/figura01/my-snow-wild-${{ matrix.app }}:latest
+            ghcr.io/figura01/my-snow-wild-${{ matrix.app }}:${{ github.sha }}
 
   # 3. Déploiement sur le VPS. Désactivé tant que la variable de dépôt
   #    DEPLOY_ENABLED ne vaut pas « true » (Settings > Secrets and variables > Actions).

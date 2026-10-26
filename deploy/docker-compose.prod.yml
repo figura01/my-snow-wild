@@ -26,7 +26,7 @@ services:
       - snow-net
 
   backend:
-    image: ghcr.io/figura01/snow-wild-backend:latest
+    image: ghcr.io/figura01/my-snow-wild-backend:latest
     restart: unless-stopped
     env_file: .env
     environment:
@@ -40,7 +40,7 @@ services:
       - proxy
 
   frontend:
-    image: ghcr.io/figura01/snow-wild-frontend:latest
+    image: ghcr.io/figura01/my-snow-wild-frontend:latest
     restart: unless-stopped
     environment:
       BACKEND_INTERNAL_URL: http://backend:4000
