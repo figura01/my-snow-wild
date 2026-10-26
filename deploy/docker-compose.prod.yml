@@ -58,7 +58,7 @@ networks:
     driver: bridge
   # Réseau du Caddy existant (/srv/vps-infra) : permet à Caddy de joindre
   # « frontend » et « backend » par leur nom. Vérifie son nom exact sur le VPS
-  # avec « docker network ls » (souvent vps-infra_internal).
+  # avec « docker network ls » (souvent vps-infra_web).
   proxy:
     external: true
-    name: ${PROXY_NETWORK:-vps-infra_internal}
+    name: ${PROXY_NETWORK:-vps-infra_web}
