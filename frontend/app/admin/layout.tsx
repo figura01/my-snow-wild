@@ -35,17 +35,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="ml-2 rounded-md bg-white/10 px-2 py-0.5 text-xs font-medium">admin</span>
         </Link>
         <nav className="flex flex-wrap gap-1 md:flex-col">
-          {nav.map((item) =>
-            item.soon ? (
-              <span key={item.href} className="rounded-lg px-3 py-2 text-sm text-white/40">
-                {item.label}
-              </span>
-            ) : (
-              <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2 text-sm hover:bg-white/10">
-                {item.label}
-              </Link>
-            ),
-          )}
+          {nav.map((item) => (
+            <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2 text-sm hover:bg-white/10">
+              {item.label}
+            </Link>
+          ))}
         </nav>
         <Link href="/" className="mt-auto text-sm text-white/60 hover:text-white">
           ← Retour au site
