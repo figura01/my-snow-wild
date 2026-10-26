@@ -36,8 +36,10 @@ services:
       db:
         condition: service_healthy
     networks:
-      - snow-net
-      - proxy
+      snow-net:
+      proxy:
+        # Nom unique sur le réseau partagé avec les autres projets du VPS.
+        aliases: [snow-wild-backend]
 
   frontend:
     image: ghcr.io/figura01/my-snow-wild-frontend:latest
@@ -47,8 +49,10 @@ services:
     depends_on:
       - backend
     networks:
-      - snow-net
-      - proxy
+      snow-net:
+      proxy:
+        # Nom unique sur le réseau partagé avec les autres projets du VPS.
+        aliases: [snow-wild-frontend]
 
 volumes:
   pgdata:

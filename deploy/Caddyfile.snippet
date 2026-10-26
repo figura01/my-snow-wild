@@ -7,11 +7,11 @@ snow-wild.laurent-vuillaume.ovh {
 
 	# Notifications de paiement envoyées par Stripe : directement à l'API.
 	handle /stripe/* {
-		reverse_proxy backend:4000
+		reverse_proxy snow-wild-backend:4000
 	}
 
 	# Tout le reste (pages et /graphql, relayé par Next.js) : le front.
 	handle {
-		reverse_proxy frontend:3000
+		reverse_proxy snow-wild-frontend:3000
 	}
 }
