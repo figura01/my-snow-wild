@@ -4,21 +4,12 @@ import { expressMiddleware } from "@as-integrations/express5";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import { buildSchema } from "type-graphql";
-import { authChecker } from "./auth/authChecker";
 import { buildContext, type Context } from "./auth/context";
 import { env } from "./config/env";
 import { AppDataSource } from "./data-source";
-import { AuthResolver } from "./resolvers/AuthResolver";
-import { CartResolver } from "./resolvers/CartResolver";
-import { ReservationResolver } from "./resolvers/ReservationResolver";
-import { UserAdminResolver } from "./resolvers/UserAdminResolver";
 import { stripeWebhookRouter } from "./stripe-webhook";
 import { paymentMode } from "./services/payment";
-import { CatalogResolver } from "./resolvers/CatalogResolver";
-import { CategoryResolver } from "./resolvers/CategoryResolver";
-import { MaterialResolver } from "./resolvers/MaterialResolver";
-import { HealthResolver } from "./resolvers/HealthResolver";
+import { buildAppSchema } from "./schema";
 import { ensureAdmin } from "./seed-admin";
 
 async function main() {
@@ -26,11 +17,7 @@ async function main() {
   console.log("[db] Connecté à PostgreSQL");
   await ensureAdmin();
 
-  const schema = await buildSchema({
-    resolvers: [HealthResolver, AuthResolver, CategoryResolver, MaterialResolver, CatalogResolver, CartResolver, ReservationResolver, UserAdminResolver],
-    authChecker,
-    validate: true,
-  });
+  const schema = await buildAppSchema();
 
   const server = new ApolloServer<Context>({
     schema,

@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 jobs:
-  # 1. Vérifications : TypeScript strict et build de production, pour l'API et le front.
+  # 1. Vérifications : TypeScript strict, tests automatisés et build de production.
   check:
     name: Vérifier ${{ matrix.app }}
     runs-on: ubuntu-latest
@@ -20,6 +20,18 @@ jobs:
     defaults:
       run:
         working-directory: ${{ matrix.app }}
+    # Base PostgreSQL éphémère pour les tests d'intégration de l'API.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: snowwild
+          POSTGRES_PASSWORD: snowwild
+          POSTGRES_DB: snowwild
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U snowwild"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,6 +39,12 @@ jobs:
           node-version: 22
       - run: npm install --no-audit --no-fund
       - run: npm run typecheck
+      - run: npm test
+        env:
+          DB_HOST: localhost
+          POSTGRES_USER: snowwild
+          POSTGRES_PASSWORD: snowwild
+          POSTGRES_DB: snowwild
       - run: npm run build
 
   # 2. Images Docker publiées sur GitHub Container Registry (uniquement sur main).

@@ -76,7 +76,8 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Récapitulatif, facturation et paiement (simulé testé ; Stripe test prêt, à brancher avec les clés)
 - [x] Réservations : consultation côté admin, « Mon compte » côté client
 - [x] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous)
-- [~] CI GitHub Actions : TypeScript + build, images GHCR, déploiement SSH (activable) — tests Jest à venir
+- [x] Tests automatisés : Jest (API, sur une base PostgreSQL de test) et Jest + React Testing Library (front)
+- [x] CI GitHub Actions : TypeScript, tests, build, images GHCR, déploiement SSH (activable)
 - [~] Déploiement sur le VPS : images de prod, migrations, compose de prod et Caddy prêts (voir « Mise en production »)
 
 ## Mise en production (VPS)
@@ -124,3 +125,13 @@ Dans le tableau de bord Stripe, ajouter un endpoint webhook
 `https://<ton-domaine>/stripe/webhook` (événements `checkout.session.completed`
 et `checkout.session.expired`), puis renseigner `STRIPE_SECRET_KEY` et
 `STRIPE_WEBHOOK_SECRET` dans le `.env` du VPS.
+
+## Tests automatisés
+
+```bash
+docker compose exec backend npm test    # API : règles de dates, devis, disponibilité, concurrence, autorisations
+docker compose exec frontend npm test   # Front : store du panier, utilitaires, composants
+```
+
+Les tests de l'API utilisent une base dédiée (`<POSTGRES_DB>_test`), créée automatiquement
+et vidée entre chaque test : les données de développement ne sont jamais touchées.
