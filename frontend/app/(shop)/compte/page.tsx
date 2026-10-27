@@ -30,7 +30,7 @@ export default async function AccountPage() {
       <section className="flex flex-col gap-4">
         <h2 className="text-2xl font-bold">Mes réservations</h2>
         {myReservations.length === 0 ? (
-          <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-line bg-white p-8">
+          <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-line bg-surface p-8">
             <p className="text-muted">Vous n&apos;avez pas encore de réservation.</p>
             <Link href="/catalogue" className={buttonVariants({ variant: "accent" })}>Parcourir le catalogue</Link>
           </div>

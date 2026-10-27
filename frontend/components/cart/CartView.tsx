@@ -41,7 +41,7 @@ export function CartView() {
 
   if (lines.length === 0 || !period) {
     return (
-      <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-line bg-white p-10">
+      <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-line bg-surface p-10">
         <p className="text-lg font-semibold">Votre panier est vide.</p>
         <Link href="/catalogue" className={buttonVariants({ variant: "accent" })}>
           Parcourir le catalogue
@@ -54,7 +54,7 @@ export function CartView() {
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="flex flex-col gap-4">
         {/* Période */}
-        <div className="flex flex-col gap-3 rounded-2xl border border-line bg-white p-5">
+        <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5">
           {editingDates ? (
             <form
               className="grid grid-cols-2 items-end gap-3 sm:grid-cols-[1fr_1fr_auto]"
@@ -89,7 +89,7 @@ export function CartView() {
         </div>
 
         {error && (
-          <p role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p role="alert" className="rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
             {error.message}
           </p>
         )}
@@ -99,7 +99,7 @@ export function CartView() {
           {lines.map((line) => {
             const q = quoteLine(line.variantId);
             return (
-              <li key={line.variantId} className="flex gap-4 rounded-2xl border border-line bg-white p-4">
+              <li key={line.variantId} className="flex gap-4 rounded-2xl border border-line bg-surface p-4">
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-snow">
                   <CategoryIcon slug={line.categorySlug} className="h-8 w-8 text-glacier/70" />
                 </div>
@@ -139,12 +139,12 @@ export function CartView() {
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Button type="button" variant="ghost" size="sm" className="text-red-600" onClick={() => removeLine(line.variantId)}>
+                    <Button type="button" variant="ghost" size="sm" className="text-red-600 dark:text-red-400" onClick={() => removeLine(line.variantId)}>
                       <Trash2 className="h-4 w-4" /> Retirer
                     </Button>
                   </div>
                   {q && !q.ok && (
-                    <p role="alert" className="text-sm font-medium text-red-600">{q.message}</p>
+                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">{q.message}</p>
                   )}
                 </div>
               </li>
@@ -160,7 +160,7 @@ export function CartView() {
       </div>
 
       {/* Récapitulatif : montants calculés par le serveur */}
-      <aside className="flex h-fit flex-col gap-4 rounded-3xl border border-line bg-white p-6 lg:sticky lg:top-6">
+      <aside className="flex h-fit flex-col gap-4 rounded-3xl border border-line bg-surface p-6 lg:sticky lg:top-6">
         <h2 className="text-xl font-bold">Récapitulatif</h2>
         <dl className="flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
@@ -177,7 +177,7 @@ export function CartView() {
           </div>
         </dl>
         {quote && !quote.valid && (
-          <p className="text-sm text-red-600">Corrigez les articles signalés pour continuer.</p>
+          <p className="text-sm text-red-600 dark:text-red-400">Corrigez les articles signalés pour continuer.</p>
         )}
         {quote?.valid && !loading ? (
           <Link href="/commande" className={buttonVariants({ variant: "accent", size: "lg" })}>

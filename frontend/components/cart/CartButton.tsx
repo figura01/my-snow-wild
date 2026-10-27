@@ -20,7 +20,7 @@ export function CartButton() {
       <span className="relative">
         <ShoppingCart className="h-5 w-5" />
         {shown > 0 && (
-          <span className="absolute -right-2.5 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-glacier px-1 text-[11px] font-bold text-white">
+          <span className="absolute -right-2.5 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-bold text-white">
             {shown}
           </span>
         )}

@@ -26,8 +26,8 @@ export type Reservation = {
 };
 
 export function statusOf(r: Pick<Reservation, "status" | "isExpired">) {
-  if (r.status === "PAID") return { label: "Payée", className: "bg-green-100 text-green-800" };
+  if (r.status === "PAID") return { label: "Payée", className: "bg-green-100 dark:bg-green-400/15 text-green-800 dark:text-green-300" };
   if (r.status === "CANCELLED") return { label: "Annulée", className: "bg-line text-muted" };
   if (r.isExpired) return { label: "Expirée (non payée)", className: "bg-line text-muted" };
-  return { label: "En attente de paiement", className: "bg-amber-100 text-amber-900" };
+  return { label: "En attente de paiement", className: "bg-amber-100 dark:bg-amber-400/15 text-amber-900 dark:text-amber-200" };
 }

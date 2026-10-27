@@ -61,7 +61,7 @@ export function RegisterForm({ next }: { next: string }) {
         <Label htmlFor="password">Mot de passe (8 caractères minimum)</Label>
         <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required />
       </div>
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       <Button type="submit" variant="accent" disabled={loading}>
         {loading ? "Création…" : "Créer mon compte"}
       </Button>

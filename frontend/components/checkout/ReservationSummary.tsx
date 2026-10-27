@@ -5,7 +5,7 @@ import type { Reservation } from "@/lib/reservations";
 
 export function ReservationSummary({ reservation }: { reservation: Reservation }) {
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-6">
+    <div className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="font-semibold">
           Du {formatDay(reservation.startDate)} au {formatDay(reservation.endDate)}

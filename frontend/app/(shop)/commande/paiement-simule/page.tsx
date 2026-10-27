@@ -23,7 +23,7 @@ export default async function SimulatedPaymentPage({
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       <h1 className="text-3xl font-extrabold">Paiement</h1>
-      <p className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      <p className="rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
         Mode simulation : aucune clé Stripe n&apos;est configurée, aucun paiement réel n&apos;est effectué.
       </p>
       <ReservationSummary reservation={reservation} />

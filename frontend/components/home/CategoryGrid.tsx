@@ -16,9 +16,9 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
           <Link
             key={category.slug}
             href={`/catalogue?categorie=${category.slug}`}
-            className="group flex flex-col gap-4 rounded-3xl border border-line bg-white p-5 transition hover:-translate-y-0.5 hover:border-glacier hover:shadow-md"
+            className="group flex flex-col gap-4 rounded-3xl border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:border-glacier hover:shadow-md"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-glacier transition group-hover:bg-glacier group-hover:text-white">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 dark:bg-glacier/15 text-glacier transition group-hover:bg-brand group-hover:text-white">
               <CategoryIcon slug={category.slug} className="h-6 w-6" />
             </span>
             <span className="flex flex-col">

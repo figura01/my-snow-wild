@@ -20,7 +20,7 @@ export function SearchForm({
     <form
       action="/catalogue"
       method="get"
-      className="grid grid-cols-2 gap-3 rounded-3xl border border-line bg-white p-4 shadow-sm md:grid-cols-[2fr_1.3fr_1fr_1fr_auto] md:items-end"
+      className="grid grid-cols-2 gap-3 rounded-3xl border border-line bg-surface p-4 shadow-sm md:grid-cols-[2fr_1.3fr_1fr_1fr_auto] md:items-end"
     >
       <div className="col-span-2 flex flex-col gap-1.5 md:col-span-1">
         <Label htmlFor="q">Que cherchez-vous ?</Label>

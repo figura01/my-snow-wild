@@ -32,7 +32,7 @@ export default async function CataloguePage({
       <SearchForm categories={categories} params={params} />
 
       {error && (
-        <p role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <p role="alert" className="rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
           {error} Voici le catalogue sans filtre de dates.
         </p>
       )}
@@ -44,7 +44,7 @@ export default async function CataloguePage({
       </p>
 
       {catalog.items.length === 0 ? (
-        <p className="rounded-3xl border border-dashed border-line bg-white p-10 text-center text-muted">
+        <p className="rounded-3xl border border-dashed border-line bg-surface p-10 text-center text-muted">
           Aucun matériel ne correspond à votre recherche.
         </p>
       ) : (

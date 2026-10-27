@@ -42,7 +42,7 @@ export default async function AdminDashboard() {
       {maintenanceConflicts.length > 0 && (
         <Link
           href="/admin/maintenance"
-          className="flex items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4 text-sm font-semibold text-amber-900 hover:bg-amber-100"
+          className="flex items-center gap-3 rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-5 py-4 text-sm font-semibold text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-400/20"
         >
           <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden="true" />
           {maintenanceConflicts.length} réservation{maintenanceConflicts.length > 1 ? "s" : ""} à venir touchée
@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href} className="rounded-2xl border border-line bg-white p-5 transition hover:border-glacier md:p-6">
+          <Link key={stat.label} href={stat.href} className="rounded-2xl border border-line bg-surface p-5 transition hover:border-glacier md:p-6">
             <span className="block text-3xl font-extrabold">{stat.value}</span>
             <span className="text-sm text-muted">{stat.label}</span>
           </Link>

@@ -69,7 +69,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
       </Link>
 
       <div className="grid gap-6 md:gap-10 lg:grid-cols-2">
-        <div className="flex aspect-[16/10] items-center justify-center rounded-3xl border border-line bg-gradient-to-br from-sky-50 to-slate-100 lg:aspect-square">
+        <div className="flex aspect-[16/10] items-center justify-center rounded-3xl border border-line bg-gradient-to-br from-sky-50 dark:from-[#15284c] to-slate-100 dark:to-[#101a2c] lg:aspect-square">
           {material.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={material.imageUrl} alt={material.name} className="h-full w-full object-contain p-6 lg:p-10" />
@@ -88,7 +88,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
             {material.description && <p className="text-muted">{material.description}</p>}
           </div>
 
-          <form method="get" className="grid grid-cols-2 items-end gap-3 rounded-2xl border border-line bg-white p-4 sm:grid-cols-[1fr_1fr_auto]">
+          <form method="get" className="grid grid-cols-2 items-end gap-3 rounded-2xl border border-line bg-surface p-4 sm:grid-cols-[1fr_1fr_auto]">
             <div className="flex min-w-0 flex-col gap-1.5">
               <Label htmlFor="du">Du</Label>
               <Input id="du" name="du" type="date" min={today} defaultValue={du} required className="min-w-0 px-3" />
@@ -103,7 +103,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
           </form>
 
           {error && (
-            <p role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p role="alert" className="rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
               {error}
             </p>
           )}
@@ -116,7 +116,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
               {(sizes ?? material.variants.map((v) => ({ variantId: v.id, size: v.size, available: v.inService }))).map((s) => (
                 <li
                   key={s.variantId}
-                  className={`flex flex-col rounded-xl border px-3 py-2 ${s.available > 0 ? "border-line bg-white" : "border-line bg-snow text-muted"}`}
+                  className={`flex flex-col rounded-xl border px-3 py-2 ${s.available > 0 ? "border-line bg-surface" : "border-line bg-snow text-muted"}`}
                 >
                   <span className="font-semibold">{s.size}</span>
                   <span className="text-xs">
@@ -132,7 +132,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
           </div>
 
           {days && (
-            <p className="rounded-2xl bg-ink px-5 py-4 text-white">
+            <p className="rounded-2xl bg-night px-5 py-4 text-white dark:border dark:border-line">
               {days} jour{days > 1 ? "s" : ""} de location :{" "}
               <strong>{formatPrice(material.dailyPriceCents * days)}</strong> par article
             </p>

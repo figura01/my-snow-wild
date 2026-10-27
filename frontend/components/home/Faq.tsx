@@ -33,7 +33,7 @@ export function Faq() {
       </div>
       <div className="flex flex-col gap-3">
         {questions.map(({ q, a }) => (
-          <details key={q} className="group rounded-2xl border border-line bg-white px-5 open:shadow-sm">
+          <details key={q} className="group rounded-2xl border border-line bg-surface px-5 open:shadow-sm">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold [&::-webkit-details-marker]:hidden">
               {q}
               <ChevronDown className="h-5 w-5 shrink-0 text-muted transition group-open:rotate-180" aria-hidden="true" />

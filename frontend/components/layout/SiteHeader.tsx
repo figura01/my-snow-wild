@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { CartButton } from "@/components/cart/CartButton";
 import { LogoutButton } from "./LogoutButton";
 import { MobileNav } from "./MobileNav";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Layout USER : l'en-tête s'adapte selon que le visiteur est connecté,
 // et affiche l'accès au back-office uniquement pour un ADMIN.
@@ -13,7 +14,7 @@ export async function SiteHeader() {
   const user = await getSessionUser();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
       <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4">
         <Link href="/" aria-label="Snow Wild, accueil">
           <Logo />
@@ -23,6 +24,7 @@ export async function SiteHeader() {
           <Link href="/catalogue" className={buttonVariants({ variant: "ghost", size: "sm" })}>
             Catalogue
           </Link>
+          <ThemeToggle />
           <CartButton />
           {user ? (
             <>
@@ -44,6 +46,7 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
           <CartButton />
           <MobileNav user={user ? { firstName: user.firstName, role: user.role } : null} />
         </div>

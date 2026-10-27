@@ -33,7 +33,7 @@ export function CategoryForm({ category }: { category?: Category }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex max-w-xl flex-col gap-5 rounded-3xl border border-line bg-white p-5 md:p-6">
+    <form onSubmit={onSubmit} className="flex max-w-xl flex-col gap-5 rounded-3xl border border-line bg-surface p-5 md:p-6">
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">Nom</Label>
         <Input id="name" name="name" defaultValue={category?.name} required minLength={2} maxLength={60} />
@@ -42,7 +42,7 @@ export function CategoryForm({ category }: { category?: Category }) {
         <Label htmlFor="description">Description (facultatif)</Label>
         <Textarea id="description" name="description" defaultValue={category?.description ?? ""} maxLength={500} />
       </div>
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       <div>
         <Button type="submit" variant="accent" disabled={loading}>
           {loading ? "Enregistrement…" : category ? "Enregistrer" : "Créer la catégorie"}

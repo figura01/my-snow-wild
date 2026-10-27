@@ -36,7 +36,7 @@ export function DeleteButton({
         type="button"
         variant="ghost"
         size="sm"
-        className="text-red-600"
+        className="text-red-600 dark:text-red-400"
         disabled={loading}
         aria-label={`Supprimer ${label}`}
         onClick={async () => {
@@ -55,7 +55,7 @@ export function DeleteButton({
         Supprimer
       </Button>
       {error && (
-        <span role="alert" className="max-w-xs text-right text-xs text-red-600">
+        <span role="alert" className="max-w-xs text-right text-xs text-red-600 dark:text-red-400">
           {error}
         </span>
       )}

@@ -1,3 +1,4 @@
+// Couleurs : variables CSS --mtn-* (globals.css), adaptées au mode sombre.
 // Silhouette de montagnes en SVG, en fond des bandeaux de l'accueil (purement décorative).
 // La neige des sommets = une bande blanche ondulée, découpée par la forme de chaque chaîne.
 const FAR = "M0 230 L140 120 L230 190 L360 70 L470 170 L560 110 L690 200 L820 90 L940 180 L1060 120 L1200 210 V320 H0 Z";
@@ -16,11 +17,11 @@ export function Mountains({ className, id = "mtn" }: { className?: string; id?: 
         <clipPath id={`${id}-far`}><path d={FAR} /></clipPath>
         <clipPath id={`${id}-near`}><path d={NEAR} /></clipPath>
       </defs>
-      <path d={FAR} fill="#dbeafe" />
-      <path d={snowLine(135)} fill="#ffffff" clipPath={`url(#${id}-far)`} />
-      <path d={NEAR} fill="#bfdbfe" />
-      <path d={snowLine(205)} fill="#ffffff" fillOpacity="0.9" clipPath={`url(#${id}-near)`} />
-      <path d="M0 300 C200 270 400 310 600 290 C800 270 1000 305 1200 285 V320 H0 Z" fill="#ffffff" />
+      <path d={FAR} fill="var(--mtn-far)" />
+      <path d={snowLine(135)} fill="var(--mtn-cap)" clipPath={`url(#${id}-far)`} />
+      <path d={NEAR} fill="var(--mtn-near)" />
+      <path d={snowLine(205)} fill="var(--mtn-cap)" fillOpacity="0.9" clipPath={`url(#${id}-near)`} />
+      <path d="M0 300 C200 270 400 310 600 290 C800 270 1000 305 1200 285 V320 H0 Z" fill="var(--mtn-snow)" />
     </svg>
   );
 }

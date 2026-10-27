@@ -30,7 +30,7 @@ export function AddToCart({ material, sizes, period }: Props) {
 
   if (!period || !sizes) {
     return (
-      <p className="rounded-2xl border border-dashed border-line bg-white px-5 py-4 text-sm text-muted">
+      <p className="rounded-2xl border border-dashed border-line bg-surface px-5 py-4 text-sm text-muted">
         Choisissez vos dates ci-dessus pour vérifier la disponibilité et ajouter au panier.
       </p>
     );
@@ -50,7 +50,7 @@ export function AddToCart({ material, sizes, period }: Props) {
   const max = Math.max(0, Math.min(MAX_QUANTITY, selected.available) - inCart);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-line bg-white p-5">
+    <div className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5">
       <div className="grid grid-cols-[1fr_7rem] gap-3">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="variant">Taille</Label>
@@ -112,7 +112,7 @@ export function AddToCart({ material, sizes, period }: Props) {
       </Button>
 
       {feedback && (
-        <div role="status" className="flex flex-col gap-2 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-900">
+        <div role="status" className="flex flex-col gap-2 rounded-xl bg-green-50 dark:bg-green-400/10 px-4 py-3 text-sm text-green-900 dark:text-green-200">
           <span className="flex items-center gap-2 font-semibold">
             <Check className="h-4 w-4" /> Ajouté au panier.
           </span>

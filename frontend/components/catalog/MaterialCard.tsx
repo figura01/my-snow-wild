@@ -17,9 +17,9 @@ export function MaterialCard({
   return (
     <Link
       href={`/materiel/${material.slug}${query}`}
-      className="group flex overflow-hidden rounded-3xl border border-line bg-white transition hover:-translate-y-1 hover:shadow-lg sm:flex-col"
+      className="group flex overflow-hidden rounded-3xl border border-line bg-surface transition hover:-translate-y-1 hover:shadow-lg sm:flex-col"
     >
-      <div className="flex w-28 shrink-0 items-center justify-center bg-gradient-to-br from-sky-50 to-slate-100 sm:aspect-[4/3] sm:w-auto">
+      <div className="flex w-28 shrink-0 items-center justify-center bg-gradient-to-br from-sky-50 dark:from-[#15284c] to-slate-100 dark:to-[#101a2c] sm:aspect-[4/3] sm:w-auto">
         {material.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={material.imageUrl} alt={material.name} className="h-full w-full object-contain p-3 sm:p-6" />

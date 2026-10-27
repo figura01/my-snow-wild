@@ -40,7 +40,7 @@ export function ConfirmationView({ reservationId, sessionId }: { reservationId: 
 
   if (state.status === "error") {
     return (
-      <div className="mx-auto flex max-w-xl flex-col gap-4 rounded-3xl border border-line bg-white p-8">
+      <div className="mx-auto flex max-w-xl flex-col gap-4 rounded-3xl border border-line bg-surface p-8">
         <h1 className="text-2xl font-bold">Paiement non confirmé</h1>
         <p className="text-muted">{state.message}</p>
         <Link href="/panier" className={buttonVariants({ variant: "outline" })}>Retour au panier</Link>
@@ -49,8 +49,8 @@ export function ConfirmationView({ reservationId, sessionId }: { reservationId: 
   }
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center gap-4 rounded-3xl border border-line bg-white p-10 text-center">
-      <CheckCircle2 className="h-14 w-14 text-green-600" aria-hidden="true" />
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-4 rounded-3xl border border-line bg-surface p-10 text-center">
+      <CheckCircle2 className="h-14 w-14 text-green-600 dark:text-green-400" aria-hidden="true" />
       <h1 className="text-3xl font-extrabold">Réservation confirmée</h1>
       <p className="text-muted">
         Merci ! Votre paiement de {formatPrice(state.total ?? 0)} est bien enregistré. Votre matériel vous attend.

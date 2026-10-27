@@ -2,7 +2,7 @@
 // À partir de 1024 px : tableau classique. En dessous : chaque ligne devient une carte,
 // et chaque cellule affiche son intitulé (attribut data-label) à gauche de sa valeur.
 export const t = {
-  wrap: "rounded-2xl border border-line bg-white lg:overflow-x-auto",
+  wrap: "rounded-2xl border border-line bg-surface lg:overflow-x-auto",
   table: "block w-full text-left text-sm lg:table",
   thead: "hidden border-b border-line bg-snow text-xs uppercase tracking-wide text-muted lg:table-header-group",
   th: "px-4 py-3",

@@ -1,14 +1,54 @@
 @import "tailwindcss";
 
+/* Mode sombre piloté par la classe « dark » sur <html> (bouton jour/nuit), pas par le système. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Jetons de couleur. Les composants n'utilisent que ces noms (bg-surface, text-ink, border-line…) :
+ * le mode sombre redéfinit les valeurs plus bas, sans toucher aux composants.
+ *   ink      texte principal          snow    fond de page
+ *   surface  cartes, champs, en-tête  line    bordures
+ *   muted    texte secondaire         night   panneaux toujours sombres (back-office, bandeau)
+ *   glacier  accent pour texte, bordures, focus
+ *   brand    accent pour les fonds (boutons, pastilles) : reste assez foncé pour du texte blanc
+ */
 @theme {
   --color-ink: #0b1220;
   --color-snow: #f6f8fb;
+  --color-surface: #ffffff;
+  --color-line: #e3e8f0;
+  --color-muted: #5a6478;
+  --color-night: #0b1220;
   --color-glacier: #1d63d6;
   --color-glacier-dark: #164ea9;
-  --color-muted: #5a6478;
-  --color-line: #e3e8f0;
+  --color-brand: #1d63d6;
+  --color-brand-dark: #164ea9;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-logo: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  /* Montagnes décoratives de l'accueil. */
+  --mtn-far: #dbeafe;
+  --mtn-near: #bfdbfe;
+  --mtn-cap: #ffffff;
+  --mtn-snow: #ffffff;
+}
+
+.dark {
+  color-scheme: dark; /* champs date, listes, barres de défilement natives en sombre */
+  --color-ink: #e6ecf5;
+  --color-snow: #0b1120;
+  --color-surface: #131c2e;
+  --color-line: #263249;
+  --color-muted: #9aa6bd;
+  --color-night: #0f1729;
+  --color-glacier: #5b9bf8;
+  --color-glacier-dark: #3b82f6;
+  --mtn-far: #1a2c4f;
+  --mtn-near: #213861;
+  --mtn-cap: #3a5687;
+  --mtn-snow: #131c2e;
 }
 
 body {

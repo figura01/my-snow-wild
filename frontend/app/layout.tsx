@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { themeInitScript } from "@/lib/theme";
 import { Providers } from "./providers";
 
 // Police du logo (le reste du site garde la police système).
@@ -16,7 +17,11 @@ export const viewport: Viewport = { themeColor: "#1d63d6" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={logoFont.variable}>
+    <html lang="fr" className={logoFont.variable} suppressHydrationWarning>
+      <head>
+        {/* Applique le thème mémorisé avant le premier affichage. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-screen antialiased">
         <Providers>{children}</Providers>
       </body>

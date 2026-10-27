@@ -29,7 +29,7 @@ export function MaintenancePanel({ variants, maintenances }: { variants: Variant
   const history = maintenances.filter((m) => !m.isActive);
 
   return (
-    <section className="flex max-w-2xl flex-col gap-5 rounded-3xl border border-line bg-white p-5 md:p-6" aria-labelledby="maintenance-title">
+    <section className="flex max-w-2xl flex-col gap-5 rounded-3xl border border-line bg-surface p-5 md:p-6" aria-labelledby="maintenance-title">
       <div className="flex flex-col gap-1">
         <h2 id="maintenance-title" className="flex items-center gap-2 text-xl font-bold">
           <Wrench className="h-5 w-5 text-glacier" aria-hidden="true" /> Maintenance
@@ -40,7 +40,7 @@ export function MaintenancePanel({ variants, maintenances }: { variants: Variant
       </div>
 
       {conflicts.length > 0 && (
-        <div role="alert" className="flex flex-col gap-2 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+        <div role="alert" className="flex flex-col gap-2 rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-900 dark:text-amber-200">
           <p className="flex items-center gap-2 font-semibold">
             <AlertTriangle className="h-4 w-4" aria-hidden="true" /> Réservations à venir touchées par cette maintenance
           </p>
@@ -65,7 +65,7 @@ export function MaintenancePanel({ variants, maintenances }: { variants: Variant
                 <span className="block text-sm text-muted">
                   {variant.inService} en service sur {variant.stock}
                   {variant.inMaintenance > 0 && (
-                    <span className="font-medium text-amber-700"> · {variant.inMaintenance} en maintenance</span>
+                    <span className="font-medium text-amber-700 dark:text-amber-300"> · {variant.inMaintenance} en maintenance</span>
                   )}
                 </span>
               </div>
@@ -98,7 +98,7 @@ export function MaintenancePanel({ variants, maintenances }: { variants: Variant
           <h3 className="font-semibold">En cours</h3>
           <ul className="flex flex-col gap-2">
             {active.map((m) => (
-              <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3">
+              <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 dark:border-amber-400/30 bg-amber-50/60 dark:bg-amber-400/10 px-4 py-3">
                 <div className="text-sm">
                   <span className="font-semibold">
                     {m.quantity} × {m.variant.size}
@@ -107,7 +107,7 @@ export function MaintenancePanel({ variants, maintenances }: { variants: Variant
                   <span className="block text-xs text-muted">
                     Depuis le {formatDate(m.startedAt)}
                     {m.expectedReturnDate && ` · retour prévu le ${formatDate(m.expectedReturnDate)}`}
-                    {isLate(m) && <span className="font-semibold text-red-600"> · en retard</span>}
+                    {isLate(m) && <span className="font-semibold text-red-600 dark:text-red-400"> · en retard</span>}
                   </span>
                 </div>
                 <EndMaintenanceButton id={m.id} label={`${m.quantity} × ${m.variant.size}`} />
@@ -178,7 +178,7 @@ function StartForm({ variant, onDone }: { variant: Variant; onDone: (conflicts: 
         <Input id={id("reason")} name="reason" placeholder="Carre abîmée, fixation à régler…" minLength={2} maxLength={200} required />
       </div>
       {error && (
-        <p role="alert" className="col-span-2 text-sm text-red-600 sm:col-span-3">{error}</p>
+        <p role="alert" className="col-span-2 text-sm text-red-600 dark:text-red-400 sm:col-span-3">{error}</p>
       )}
       <div className="col-span-2 flex justify-end sm:col-span-3">
         <Button type="submit" variant="accent" size="sm" disabled={loading}>

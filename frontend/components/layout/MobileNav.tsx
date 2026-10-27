@@ -41,12 +41,12 @@ export function MobileNav({ user }: Props) {
 
       {open && (
         // Voile cliquable : un clic en dehors du menu le referme.
-        <div className="fixed inset-x-0 bottom-0 top-16 z-30 bg-ink/20" aria-hidden onClick={() => setOpen(false)} />
+        <div className="fixed inset-x-0 bottom-0 top-16 z-30 bg-night/40" aria-hidden onClick={() => setOpen(false)} />
       )}
       {open && (
         <nav
           id="mobile-menu"
-          className="absolute inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-white p-3 shadow-lg"
+          className="absolute inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-surface p-3 shadow-lg"
         >
           <Link href="/catalogue" className={itemClass}>Catalogue</Link>
           {user ? (

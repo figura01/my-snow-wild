@@ -74,7 +74,7 @@ export function CheckoutForm({ user }: Props) {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
-      <form onSubmit={onSubmit} className="flex flex-col gap-5 rounded-3xl border border-line bg-white p-5 sm:p-6">
+      <form onSubmit={onSubmit} className="flex flex-col gap-5 rounded-3xl border border-line bg-surface p-5 sm:p-6">
         <h2 className="text-xl font-bold">Informations de facturation</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {fields.map((f) => (
@@ -94,7 +94,7 @@ export function CheckoutForm({ user }: Props) {
           ))}
         </div>
         {error && (
-          <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <p role="alert" className="rounded-xl border border-red-200 dark:border-red-400/30 bg-red-50 dark:bg-red-400/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
             {error}
           </p>
         )}
@@ -106,7 +106,7 @@ export function CheckoutForm({ user }: Props) {
         </p>
       </form>
 
-      <aside className="flex h-fit flex-col gap-4 rounded-3xl border border-line bg-white p-5 sm:p-6 lg:sticky lg:top-24">
+      <aside className="flex h-fit flex-col gap-4 rounded-3xl border border-line bg-surface p-5 sm:p-6 lg:sticky lg:top-24">
         <h2 className="text-xl font-bold">Votre réservation</h2>
         <p className="text-sm text-muted">
           Du {formatDay(period.startDate)} au {formatDay(period.endDate)}
@@ -117,7 +117,7 @@ export function CheckoutForm({ user }: Props) {
             <li key={line.variantId} className="flex justify-between gap-3">
               <span>
                 {line.quantity} × {line.materialName} <span className="text-muted">({line.size})</span>
-                {!line.ok && <span className="block text-red-600">{line.message}</span>}
+                {!line.ok && <span className="block text-red-600 dark:text-red-400">{line.message}</span>}
               </span>
               <span className="whitespace-nowrap">{formatPrice(line.lineTotalCents)}</span>
             </li>

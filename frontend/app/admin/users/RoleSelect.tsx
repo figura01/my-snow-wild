@@ -33,7 +33,7 @@ export function RoleSelect({ id, role, label }: { id: string; role: "ADMIN" | "U
         <option value="USER">Client</option>
         <option value="ADMIN">Admin</option>
       </Select>
-      {error && <span role="alert" className="max-w-xs text-xs text-red-600">{error}</span>}
+      {error && <span role="alert" className="max-w-xs text-xs text-red-600 dark:text-red-400">{error}</span>}
     </span>
   );
 }

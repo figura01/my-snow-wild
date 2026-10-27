@@ -54,14 +54,14 @@ export function MaterialForm({
 
   if (categories.length === 0) {
     return (
-      <p className="rounded-2xl border border-line bg-white p-6 text-muted">
+      <p className="rounded-2xl border border-line bg-surface p-6 text-muted">
         Crée d&apos;abord une catégorie avant d&apos;ajouter un matériel.
       </p>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex max-w-2xl flex-col gap-5 rounded-3xl border border-line bg-white p-5 md:p-6">
+    <form onSubmit={onSubmit} className="flex max-w-2xl flex-col gap-5 rounded-3xl border border-line bg-surface p-5 md:p-6">
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">Nom de la référence</Label>
         <Input id="name" name="name" defaultValue={material?.name} required minLength={2} maxLength={120} />
@@ -102,7 +102,7 @@ export function MaterialForm({
         <input type="checkbox" name="isActive" defaultChecked={material?.isActive ?? true} className="h-4 w-4" />
         Visible dans le catalogue
       </label>
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       <div>
         <Button type="submit" variant="accent" disabled={loading}>
           {loading ? "Enregistrement…" : material ? "Enregistrer" : "Créer le matériel"}

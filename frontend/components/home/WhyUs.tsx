@@ -25,7 +25,7 @@ const reasons = [
 
 export function WhyUs() {
   return (
-    <section className="rounded-[2rem] bg-ink px-5 py-12 text-white sm:px-10 md:py-16" aria-labelledby="why-title">
+    <section className="rounded-[2rem] bg-night px-5 dark:border dark:border-line py-12 text-white sm:px-10 md:py-16" aria-labelledby="why-title">
       <div className="flex flex-col gap-10">
         <div className="flex max-w-2xl flex-col gap-3">
           <span className="text-sm font-semibold uppercase tracking-wide text-sky-300">Pourquoi Snow Wild</span>

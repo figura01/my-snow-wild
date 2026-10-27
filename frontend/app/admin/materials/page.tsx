@@ -44,7 +44,7 @@ export default async function MaterialsPage() {
                   <span>
                     <span className="font-semibold">{material.totalStock}</span>
                     {material.variants.some((v) => v.inMaintenance > 0) && (
-                      <span className="ml-1 text-xs font-medium text-amber-700">
+                      <span className="ml-1 text-xs font-medium text-amber-700 dark:text-amber-300">
                         dont {material.variants.reduce((sum, v) => sum + v.inMaintenance, 0)} en maintenance
                       </span>
                     )}
@@ -57,7 +57,7 @@ export default async function MaterialsPage() {
                   <span
                     className={
                       material.isActive
-                        ? "rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800"
+                        ? "rounded-full bg-green-100 dark:bg-green-400/15 px-2.5 py-1 text-xs font-medium text-green-800 dark:text-green-300"
                         : "rounded-full bg-line px-2.5 py-1 text-xs font-medium text-muted"
                     }
                   >

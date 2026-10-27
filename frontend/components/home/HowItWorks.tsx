@@ -27,12 +27,12 @@ export function HowItWorks() {
       </div>
       <ol className="grid gap-4 md:grid-cols-3">
         {steps.map(({ icon: Icon, title, text }, index) => (
-          <li key={title} className="flex gap-4 rounded-3xl border border-line bg-white p-5 md:flex-col md:p-6">
+          <li key={title} className="flex gap-4 rounded-3xl border border-line bg-surface p-5 md:flex-col md:p-6">
             <div className="flex items-start justify-between">
-              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-glacier">
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 dark:bg-glacier/15 text-glacier">
                 <Icon className="h-6 w-6" aria-hidden="true" />
                 {/* Numéro d'étape : pastille sur mobile, grand chiffre sur desktop. */}
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-glacier text-[11px] font-bold text-white md:hidden">
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-[11px] font-bold text-white md:hidden">
                   {index + 1}
                 </span>
               </span>

@@ -34,7 +34,7 @@ export function EndMaintenanceButton({ id, label }: { id: string; label: string 
         <Wrench className="h-4 w-4" aria-hidden="true" />
         Remettre en service
       </Button>
-      {error && <span role="alert" className="text-xs text-red-600">{error}</span>}
+      {error && <span role="alert" className="text-xs text-red-600 dark:text-red-400">{error}</span>}
     </span>
   );
 }

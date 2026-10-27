@@ -44,14 +44,14 @@ export default async function AdminMaintenancePage() {
       <PageHeader title="Maintenance" />
       <div className="flex flex-col gap-6">
         {maintenanceConflicts.length > 0 && (
-          <section role="alert" className="flex flex-col gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-5 text-amber-900">
+          <section role="alert" className="flex flex-col gap-3 rounded-2xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 p-5 text-amber-900 dark:text-amber-200">
             <h2 className="flex items-center gap-2 font-bold">
               <AlertTriangle className="h-5 w-5" aria-hidden="true" />
               {maintenanceConflicts.length} réservation{maintenanceConflicts.length > 1 ? "s" : ""} à venir sans assez d&apos;exemplaires en service
             </h2>
             <ul className="flex flex-col gap-2 text-sm">
               {maintenanceConflicts.map((c) => (
-                <li key={`${c.reservation.id}-${c.size}`} className="rounded-xl bg-white/70 px-3 py-2">
+                <li key={`${c.reservation.id}-${c.size}`} className="rounded-xl bg-surface/70 px-3 py-2">
                   <span className="font-semibold">
                     {c.materialName} ({c.size})
                   </span>{" "}
@@ -104,7 +104,7 @@ export default async function AdminMaintenancePage() {
                   <td data-label="Depuis" className={`${t.td} lg:whitespace-nowrap`}>{formatDate(m.startedAt)}</td>
                   <td data-label="Retour prévu" className={`${t.td} lg:whitespace-nowrap`}>
                     {m.expectedReturnDate ? (
-                      <span className={isLate(m) ? "font-semibold text-red-600" : undefined}>
+                      <span className={isLate(m) ? "font-semibold text-red-600 dark:text-red-400" : undefined}>
                         {formatDate(m.expectedReturnDate)}
                         {isLate(m) && " · en retard"}
                       </span>

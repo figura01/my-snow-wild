@@ -11,11 +11,11 @@ const promises = [
 // Premier écran : accroche et recherche immédiatement accessibles.
 export function Hero({ categories }: { categories: { slug: string; name: string }[] }) {
   return (
-    <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-sky-100 via-sky-50 to-white px-5 pb-28 pt-10 sm:px-10 sm:pt-14 md:pb-40">
+    <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-sky-100 dark:from-[#10264d] via-sky-50 dark:via-[#0e1b36] to-white dark:to-surface px-5 pb-28 pt-10 sm:px-10 sm:pt-14 md:pb-48">
       <Mountains className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full md:h-56" />
 
       <div className="relative flex flex-col gap-6">
-        <span className="w-fit rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-glacier shadow-sm">
+        <span className="w-fit rounded-full bg-surface/80 px-3 py-1 text-xs font-semibold text-glacier shadow-sm">
           Saison 2026 – 2027 · location en ligne
         </span>
         <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
