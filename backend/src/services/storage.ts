@@ -41,7 +41,7 @@ const localStorage: ImageStorage = {
 
 // --- Cloudinary (API REST, sans dépendance) ------------------------------------------
 
-export type CloudinaryConfig = { cloudName: string; apiKey: string; apiSecret: string };
+export type CloudinaryConfig = { cloudName: string; apiKey: string; apiSecret: string; folder?: string };
 
 /** Lit CLOUDINARY_URL au format « cloudinary://<api_key>:<api_secret>@<cloud_name> ». */
 export function parseCloudinaryUrl(value: string | undefined): CloudinaryConfig | null {
@@ -59,6 +59,9 @@ export function cloudinarySignature(params: Record<string, string>, apiSecret: s
     .join("&");
   return createHash("sha1").update(payload + apiSecret).digest("hex");
 }
+
+// Dossier Cloudinary des photos (CLOUDINARY_FOLDER), distinct d'éventuels autres projets du même compte.
+const DEFAULT_FOLDER = "my-snow-wild/materials";
 
 // Transformations appliquées à la volée par Cloudinary : format et qualité automatiques.
 const TRANSFORMS: Record<ImageVariant, string> = {
@@ -86,7 +89,7 @@ export function cloudinaryStorage(config: CloudinaryConfig): ImageStorage {
   return {
     name: "cloudinary",
     async save(buffer) {
-      const body = await call("upload", { folder: "snow-wild/materials", public_id: randomUUID() }, buffer);
+      const body = await call("upload", { folder: config.folder ?? DEFAULT_FOLDER, public_id: randomUUID() }, buffer);
       if (!body.public_id) throw new Error("Cloudinary : réponse sans identifiant.");
       return body.public_id;
     },
@@ -99,7 +102,8 @@ export function cloudinaryStorage(config: CloudinaryConfig): ImageStorage {
 
 // --- Choix du stockage -------------------------------------------------------------
 
-const cloudinaryConfig = parseCloudinaryUrl(process.env.CLOUDINARY_URL);
+const parsed = parseCloudinaryUrl(process.env.CLOUDINARY_URL);
+const cloudinaryConfig = parsed ? { ...parsed, folder: process.env.CLOUDINARY_FOLDER?.trim() || DEFAULT_FOLDER } : null;
 const drivers: Partial<Record<StorageName, ImageStorage>> = {
   local: localStorage,
   ...(cloudinaryConfig ? { cloudinary: cloudinaryStorage(cloudinaryConfig) } : {}),
