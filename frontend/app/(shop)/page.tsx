@@ -37,8 +37,8 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <Hero categories={categories} />
-      <HowItWorks />
       <CategoryGrid categories={categories} />
+      <HowItWorks />
       <FeaturedMaterials materials={pickFeatured(catalog.items.map((item) => item.material))} />
       <WhyUs />
       <Faq />
