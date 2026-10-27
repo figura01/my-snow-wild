@@ -137,8 +137,6 @@ L'administrateur (`ADMIN_EMAIL` / `ADMIN_PASSWORD` du `.env`) n'est créé qu'au
 Dans le dépôt GitHub (Settings > Secrets and variables > Actions) :
 - **Repository secrets** `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (clé SSH dédiée,
   `~/.ssh/snow-wild-deploy`, autorisée sur le VPS) ;
-- **Repository variable** `DEPLOY_ENABLED` = `true` (au niveau du dépôt : elle est lue avant
-  le démarrage du job).
 
 Chaque push sur `main` vérifie le code (TypeScript, tests, build), publie les images sur GHCR,
 puis met à jour le VPS. Les migrations sont appliquées au démarrage de l'API.

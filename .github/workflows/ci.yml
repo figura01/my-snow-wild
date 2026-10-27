@@ -72,12 +72,12 @@ jobs:
             ghcr.io/figura01/my-snow-wild-${{ matrix.app }}:latest
             ghcr.io/figura01/my-snow-wild-${{ matrix.app }}:${{ github.sha }}
 
-  # 3. Déploiement sur le VPS. Désactivé tant que la variable de dépôt
-  #    DEPLOY_ENABLED ne vaut pas « true » (Settings > Secrets and variables > Actions).
+  # 3. Déploiement sur le VPS (uniquement après publication des images sur main).
+  #    Secrets requis : VPS_HOST, VPS_USER, VPS_SSH_KEY.
   deploy:
     name: Déployer sur le VPS
     needs: images
-    if: vars.DEPLOY_ENABLED == 'true'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
     steps:
