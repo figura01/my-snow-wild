@@ -8,6 +8,7 @@ import { buildContext, type Context } from "./auth/context";
 import { env } from "./config/env";
 import { AppDataSource } from "./data-source";
 import { stripeWebhookRouter } from "./stripe-webhook";
+import { uploadsRouter } from "./uploads";
 import { paymentMode } from "./services/payment";
 import { buildAppSchema } from "./schema";
 import { ensureAdmin } from "./seed-admin";
@@ -33,6 +34,8 @@ async function main() {
 
   // Avant express.json() : le webhook Stripe a besoin du corps brut.
   app.use(stripeWebhookRouter());
+  // Photos : envoi (corps brut) et fichiers envoyés.
+  app.use(uploadsRouter());
 
   app.use(
     "/graphql",

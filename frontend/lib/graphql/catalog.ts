@@ -3,11 +3,27 @@ import { gql } from "@apollo/client";
 // --- Champs partagés -------------------------------------------------------
 
 export const CATEGORY_FIELDS = `id name slug description materialCount`;
-export const MATERIAL_FIELDS = `id name slug description imageUrl dailyPriceCents totalStock isActive variants { id size stock inMaintenance inService } category { id name slug }`;
+export const MATERIAL_FIELDS = `id name slug description imageUrl coverUrl images { id url alt position } level features dailyPriceCents totalStock isActive variants { id size stock inMaintenance inService } category { id name slug }`;
 
 export const MAINTENANCE_FIELDS = `id quantity reason expectedReturnDate startedAt endedAt isActive variant { id size } material { id name }`;
 
 // --- Mutations (composants client) ----------------------------------------
+
+export const DELETE_MATERIAL_IMAGE = gql`
+  mutation DeleteMaterialImage($id: ID!) {
+    deleteMaterialImage(id: $id)
+  }
+`;
+export const REORDER_MATERIAL_IMAGES = gql`
+  mutation ReorderMaterialImages($materialId: ID!, $ids: [ID!]!) {
+    reorderMaterialImages(materialId: $materialId, ids: $ids)
+  }
+`;
+export const UPDATE_MATERIAL_IMAGE_ALT = gql`
+  mutation UpdateMaterialImageAlt($id: ID!, $alt: String!) {
+    updateMaterialImageAlt(id: $id, alt: $alt) { id alt }
+  }
+`;
 
 export const START_MAINTENANCE = gql`
   mutation StartMaintenance($data: MaintenanceInput!) {

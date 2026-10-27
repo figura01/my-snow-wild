@@ -4,11 +4,35 @@
 import "reflect-metadata";
 import { AppDataSource } from "./data-source";
 import { Category } from "./entities/Category";
-import { Material } from "./entities/Material";
+import { Material, MaterialLevel } from "./entities/Material";
 import { MaterialVariant } from "./entities/MaterialVariant";
 import { slugify } from "./utils/slugify";
 
-type Item = { name: string; price: number; description: string; sizes: Record<string, number> };
+type Item = {
+  name: string;
+  price: number;
+  description: string;
+  sizes: Record<string, number>;
+  level?: MaterialLevel;
+  features?: string[];
+};
+
+const { ALL, BEGINNER, INTERMEDIATE, EXPERT } = MaterialLevel;
+
+// Niveau conseillé et points forts, ajoutés aussi aux matériels déjà créés qui n'en ont pas.
+const DETAILS: Record<string, Pick<Item, "level" | "features">> = {
+  "Ski All Mountain": { level: INTERMEDIATE, features: ["Rocker en spatule : virages faciles", "Polyvalent piste et bord de piste", "Fixations réglées à votre poids et niveau", "Fartage et affûtage avant chaque location"] },
+  "Ski piste Performance": { level: EXPERT, features: ["Cambre classique, accroche sur neige dure", "Carres affûtées pour le carving", "Fixations réglées à votre poids et niveau"] },
+  "Ski junior": { level: BEGINNER, features: ["Léger et facile à tourner", "Fixations enfant à déclenchement doux", "Idéal pour l'école de ski"] },
+  "Snowboard Freestyle": { level: INTERMEDIATE, features: ["Shape twin : se ride dans les deux sens", "Flex souple pour le snowpark", "Fixations réglables incluses"] },
+  "Snowboard All Mountain": { level: ALL, features: ["Stable à haute vitesse", "Flottaison en poudreuse", "Fixations réglables incluses"] },
+  "Chaussures de ski confort": { level: ALL, features: ["Chaussant large", "Flex souple, idéal pour progresser", "Désinfectées et séchées après chaque location"] },
+  "Boots de snowboard": { level: ALL, features: ["Laçage rapide", "Bon maintien de la cheville", "Désinfectées et séchées après chaque location"] },
+  "Casque adulte avec visière": { level: ALL, features: ["Visière intégrée : pas besoin de masque", "Réglage par molette", "Norme EN 1077"] },
+  "Casque enfant": { level: ALL, features: ["Léger et ajustable", "Norme EN 1077"] },
+  "Bâtons de ski aluminium": { level: ALL, features: ["Aluminium léger", "Dragonne réglable"] },
+  "Masque de ski": { level: ALL, features: ["Écran anti-buée", "Protection UV 100 %", "Compatible avec un casque"] },
+};
 
 export const DEMO_CATALOG: Record<string, Item[]> = {
   Skis: [
@@ -49,13 +73,22 @@ async function main() {
     }
     for (const item of items) {
       const slug = slugify(item.name);
-      if (await materials.existsBy({ slug })) continue;
+      const details = DETAILS[item.name] ?? {};
+      const existing = await materials.findOneBy({ slug });
+      if (existing) {
+        if (existing.features.length === 0 && details.features) {
+          await materials.update(existing.id, { level: details.level ?? null, features: details.features });
+        }
+        continue;
+      }
       await materials.save(
         materials.create({
           name: item.name,
           slug,
           description: item.description,
           dailyPriceCents: item.price * 100,
+          level: details.level ?? null,
+          features: details.features ?? [],
           isActive: true,
           category,
           variants: Object.entries(item.sizes).map(([size, stock], position) =>

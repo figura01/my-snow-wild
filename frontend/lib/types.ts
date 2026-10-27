@@ -30,12 +30,28 @@ export type Category = {
   materialCount: number;
 };
 
+export type MaterialLevel = "ALL" | "BEGINNER" | "INTERMEDIATE" | "EXPERT";
+
+export const LEVEL_LABELS: Record<MaterialLevel, string> = {
+  ALL: "Tous niveaux",
+  BEGINNER: "Débutant",
+  INTERMEDIATE: "Intermédiaire",
+  EXPERT: "Confirmé",
+};
+
+export type MaterialImage = { id: string; url: string; alt: string; position: number };
+
 export type Material = {
   id: string;
   name: string;
   slug: string;
   description: string | null;
   imageUrl: string | null;
+  /** Photo principale (première de la galerie), ou ancienne URL d'image. */
+  coverUrl: string | null;
+  images: MaterialImage[];
+  level: MaterialLevel | null;
+  features: string[];
   dailyPriceCents: number;
   totalStock: number;
   variants: Variant[];

@@ -1,3 +1,5 @@
+import path from "node:path";
+
 // Lecture centralisée de la configuration. Le serveur refuse de démarrer s'il
 // manque une valeur indispensable, plutôt que de tourner avec un réglage faux.
 function required(name: string): string {
@@ -25,6 +27,8 @@ export const env = {
   },
   jwtSecret,
   frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000",
+  // Dossier des photos envoyées depuis le back-office (volume Docker en production).
+  uploadDir: process.env.UPLOAD_DIR ?? path.resolve(process.cwd(), "uploads"),
   // Stripe est facultatif : sans clé, l'application utilise un paiement simulé.
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY || null,

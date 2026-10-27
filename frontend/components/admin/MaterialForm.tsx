@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { newRow, SizesEditor, type SizeRow } from "./SizesEditor";
 import { CREATE_MATERIAL, UPDATE_MATERIAL } from "@/lib/graphql/catalog";
-import type { Category, Material } from "@/lib/types";
+import { LEVEL_LABELS, type Category, type Material, type MaterialLevel } from "@/lib/types";
 
 export function MaterialForm({
   material,
@@ -37,7 +37,12 @@ export function MaterialForm({
     const data = {
       name: String(form.get("name") ?? ""),
       description: String(form.get("description") ?? "") || null,
-      imageUrl: String(form.get("imageUrl") ?? "") || null,
+      level: String(form.get("level") ?? "") || null,
+      // Un point fort par ligne.
+      features: String(form.get("features") ?? "")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean),
       dailyPriceCents: Math.round(price * 100),
       variants: sizes.map((row) => ({ id: row.id ?? null, size: row.size, stock: row.stock })),
       isActive: form.get("isActive") === "on",
@@ -94,10 +99,30 @@ export function MaterialForm({
         <Label htmlFor="description">Description (facultatif)</Label>
         <Textarea id="description" name="description" defaultValue={material?.description ?? ""} maxLength={2000} />
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="imageUrl">URL de l&apos;image (facultatif)</Label>
-        <Input id="imageUrl" name="imageUrl" type="url" defaultValue={material?.imageUrl ?? ""} />
+      <div className="grid gap-5 sm:grid-cols-[14rem_minmax(0,1fr)]">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="level">Niveau conseillé</Label>
+          <Select id="level" name="level" defaultValue={material?.level ?? ""}>
+            <option value="">Non précisé</option>
+            {(Object.keys(LEVEL_LABELS) as MaterialLevel[]).map((level) => (
+              <option key={level} value={level}>{LEVEL_LABELS[level]}</option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="features">Points forts (un par ligne, 12 au plus)</Label>
+          <Textarea
+            id="features"
+            name="features"
+            rows={4}
+            placeholder={"Fixations réglées à votre poids\nFartage avant chaque location"}
+            defaultValue={material?.features.join("\n") ?? ""}
+          />
+        </div>
       </div>
+      {!material && (
+        <p className="text-sm text-muted">Les photos s&apos;ajoutent une fois le matériel créé, depuis sa fiche.</p>
+      )}
       <label className="flex items-center gap-3 text-sm">
         <input type="checkbox" name="isActive" defaultChecked={material?.isActive ?? true} className="h-4 w-4" />
         Visible dans le catalogue

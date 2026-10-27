@@ -1,4 +1,4 @@
-import { Field, ID, Int, ObjectType } from "type-graphql";
+import { Field, ID, Int, ObjectType, registerEnumType } from "type-graphql";
 import {
   Check,
   Column,
@@ -10,7 +10,20 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Category } from "./Category";
+import { MaterialImage } from "./MaterialImage";
 import { MaterialVariant } from "./MaterialVariant";
+
+export enum MaterialLevel {
+  ALL = "ALL",
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  EXPERT = "EXPERT",
+}
+
+registerEnumType(MaterialLevel, {
+  name: "MaterialLevel",
+  description: "Niveau conseillé : tous niveaux, débutant, intermédiaire, confirmé.",
+});
 
 // Une référence produit (ex. « Ski All Mountain »). Le stock est géré
 // par taille, dans MaterialVariant.
@@ -50,6 +63,18 @@ export class Material {
     eager: true,
   })
   variants: MaterialVariant[];
+
+  // Photos (galerie de la fiche produit), chargées avec le matériel.
+  @OneToMany(() => MaterialImage, (image) => image.material, { eager: true })
+  images: MaterialImage[];
+
+  @Field(() => MaterialLevel, { nullable: true, description: "Niveau conseillé." })
+  @Column({ type: "enum", enum: MaterialLevel, nullable: true })
+  level: MaterialLevel | null;
+
+  @Field(() => [String], { description: "Points forts affichés sur la fiche produit." })
+  @Column("text", { array: true, default: () => "'{}'" })
+  features: string[];
 
   @Field({ description: "Visible dans le catalogue public." })
   @Column({ default: true })

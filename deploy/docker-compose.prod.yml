@@ -32,6 +32,9 @@ services:
     environment:
       NODE_ENV: production
       DB_HOST: db
+    # Photos envoyées depuis le back-office : conservées d'un déploiement à l'autre.
+    volumes:
+      - uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -56,6 +59,7 @@ services:
 
 volumes:
   pgdata:
+  uploads:
 
 networks:
   snow-net:

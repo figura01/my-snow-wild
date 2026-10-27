@@ -6,7 +6,7 @@ import { CatalogResolver } from "./resolvers/CatalogResolver";
 import { CategoryResolver } from "./resolvers/CategoryResolver";
 import { HealthResolver } from "./resolvers/HealthResolver";
 import { MaintenanceResolver, VariantResolver } from "./resolvers/MaintenanceResolver";
-import { MaterialResolver } from "./resolvers/MaterialResolver";
+import { MaterialImageResolver, MaterialResolver } from "./resolvers/MaterialResolver";
 import { ReservationResolver } from "./resolvers/ReservationResolver";
 import { UserAdminResolver } from "./resolvers/UserAdminResolver";
 
@@ -23,6 +23,7 @@ export const buildAppSchema = () =>
       ReservationResolver,
       UserAdminResolver,
       MaintenanceResolver,
+      MaterialImageResolver,
       VariantResolver,
     ],
     authChecker,

@@ -10,3 +10,6 @@ dist/
 
 # Cache TypeScript
 *.tsbuildinfo
+
+# Photos envoyées en local
+backend/uploads/

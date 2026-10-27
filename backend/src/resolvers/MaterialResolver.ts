@@ -1,4 +1,6 @@
 import { Arg, Authorized, FieldResolver, ID, Int, Mutation, Query, Resolver, Root } from "type-graphql";
+import { MaterialImage } from "../entities/MaterialImage";
+import { deleteFilesOf, deleteMaterialImage, imageUrl, reorderMaterialImages, updateImageAlt } from "../services/images";
 import { AppDataSource } from "../data-source";
 import { Category } from "../entities/Category";
 import { Material } from "../entities/Material";
@@ -21,6 +23,10 @@ async function findCategory(id: string) {
   return category;
 }
 
+/** Points forts : lignes vides retirées, espaces superflus nettoyés. */
+const cleanFeatures = (features?: string[] | null) =>
+  (features ?? []).map((f) => f.trim().replace(/\s+/g, " ")).filter(Boolean);
+
 function checkDuplicateSizes(variants: VariantInput[]) {
   const seen = new Set<string>();
   for (const variant of variants) {
@@ -35,6 +41,17 @@ export class MaterialResolver {
   @FieldResolver(() => [MaterialVariant], { description: "Tailles, dans l'ordre de saisie." })
   variants(@Root() material: Material): MaterialVariant[] {
     return [...(material.variants ?? [])].sort((a, b) => a.position - b.position);
+  }
+
+  @FieldResolver(() => [MaterialImage], { description: "Photos, la principale en premier." })
+  images(@Root() material: Material): MaterialImage[] {
+    return [...(material.images ?? [])].sort((a, b) => a.position - b.position);
+  }
+
+  @FieldResolver(() => String, { nullable: true, description: "Photo principale (ou ancienne URL d'image)." })
+  coverUrl(@Root() material: Material): string | null {
+    const first = this.images(material)[0];
+    return first ? imageUrl(first) : material.imageUrl ?? null;
   }
 
   @FieldResolver(() => Int, { description: "Stock total, toutes tailles confondues." })
@@ -74,6 +91,8 @@ export class MaterialResolver {
         slug: await uniqueSlug(materials(), name),
         description: data.description?.trim() || null,
         imageUrl: data.imageUrl?.trim() || null,
+        level: data.level ?? null,
+        features: cleanFeatures(data.features),
         dailyPriceCents: data.dailyPriceCents,
         isActive: data.isActive,
         category: await findCategory(data.categoryId),
@@ -127,7 +146,9 @@ export class MaterialResolver {
       name,
       slug: await uniqueSlug(materials(), name, id),
       description: data.description?.trim() || null,
-      imageUrl: data.imageUrl?.trim() || null,
+      ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl?.trim() || null } : {}),
+      ...(data.level !== undefined ? { level: data.level ?? null } : {}),
+      ...(data.features !== undefined ? { features: cleanFeatures(data.features) } : {}),
       dailyPriceCents: data.dailyPriceCents,
       isActive: data.isActive,
       category: await findCategory(data.categoryId),
@@ -156,7 +177,42 @@ export class MaterialResolver {
         "Ce matériel figure dans des réservations : décoche « Visible dans le catalogue » pour le masquer.",
       );
     }
+    await deleteFilesOf(id);
     await materials().remove(material);
     return true;
+  }
+
+  // --- Photos (ADMIN) ; l'envoi des fichiers passe par POST /api/materials/:id/images --
+
+  @Authorized(UserRole.ADMIN)
+  @Mutation(() => Boolean)
+  async deleteMaterialImage(@Arg("id", () => ID) id: string): Promise<boolean> {
+    await deleteMaterialImage(id);
+    return true;
+  }
+
+  @Authorized(UserRole.ADMIN)
+  @Mutation(() => Boolean, { description: "Nouvel ordre des photos ; la première devient la photo principale." })
+  async reorderMaterialImages(
+    @Arg("materialId", () => ID) materialId: string,
+    @Arg("ids", () => [ID]) ids: string[],
+  ): Promise<boolean> {
+    await reorderMaterialImages(materialId, ids);
+    return true;
+  }
+
+  @Authorized(UserRole.ADMIN)
+  @Mutation(() => MaterialImage)
+  updateMaterialImageAlt(@Arg("id", () => ID) id: string, @Arg("alt") alt: string): Promise<MaterialImage> {
+    return updateImageAlt(id, alt);
+  }
+}
+
+// Champs calculés des photos.
+@Resolver(() => MaterialImage)
+export class MaterialImageResolver {
+  @FieldResolver(() => String, { description: "Adresse du fichier, sur le même domaine que le site." })
+  url(@Root() image: MaterialImage): string {
+    return imageUrl(image);
   }
 }

@@ -2,6 +2,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsBoolean,
+  IsEnum,
   IsInt,
   IsOptional,
   IsUrl,
@@ -13,6 +14,7 @@ import {
   ValidateNested,
 } from "class-validator";
 import { Field, ID, InputType, Int } from "type-graphql";
+import { MaterialLevel } from "../entities/Material";
 
 @InputType()
 export class CategoryInput {
@@ -62,6 +64,17 @@ export class MaterialInput {
   @IsOptional()
   @IsUrl({ require_tld: false }, { message: "L'URL de l'image est invalide." })
   imageUrl?: string;
+
+  @Field(() => MaterialLevel, { nullable: true })
+  @IsOptional()
+  @IsEnum(MaterialLevel)
+  level?: MaterialLevel | null;
+
+  @Field(() => [String], { nullable: true, description: "Points forts (12 au plus)." })
+  @IsOptional()
+  @ArrayMaxSize(12, { message: "12 points forts au maximum." })
+  @MaxLength(120, { each: true, message: "Chaque point fort fait 120 caractères au plus." })
+  features?: string[] | null;
 
   @Field(() => Int)
   @IsInt()
