@@ -1,45 +1,48 @@
-import Link from "next/link";
-import { CategoryIcon } from "@/components/catalog/CategoryIcon";
-import { SearchForm } from "@/components/catalog/SearchForm";
+import { CategoryGrid } from "@/components/home/CategoryGrid";
+import { Faq } from "@/components/home/Faq";
+import { FeaturedMaterials } from "@/components/home/FeaturedMaterials";
+import { FinalCta } from "@/components/home/FinalCta";
+import { Hero } from "@/components/home/Hero";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { WhyUs } from "@/components/home/WhyUs";
+import { MATERIAL_FIELDS } from "@/lib/graphql/catalog";
 import { serverGraphql } from "@/lib/server/graphql";
+import type { Material } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+/** Une référence par catégorie, pour une sélection variée. */
+function pickFeatured(materials: Material[], count = 4): Material[] {
+  const seen = new Set<string>();
+  const picked: Material[] = [];
+  for (const material of materials) {
+    if (seen.has(material.category.slug)) continue;
+    seen.add(material.category.slug);
+    picked.push(material);
+    if (picked.length === count) break;
+  }
+  return picked;
+}
+
+// Page d'accueil organisée comme une landing page ; la recherche reste dans le premier écran.
 export default async function HomePage() {
-  const { categories } = await serverGraphql<{
+  const { categories, catalog } = await serverGraphql<{
     categories: { slug: string; name: string; materialCount: number }[];
-  }>("{ categories { slug name materialCount } }");
+    catalog: { items: { material: Material }[] };
+  }>(`{
+    categories { slug name materialCount }
+    catalog { items { material { ${MATERIAL_FIELDS} } } }
+  }`);
 
   return (
-    <div className="flex flex-col gap-14">
-      <section className="flex flex-col gap-6 pt-8">
-        <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl">
-          Votre matériel de ski,
-          <br />
-          <span className="text-glacier">réservé en quelques clics.</span>
-        </h1>
-        <p className="max-w-xl text-lg text-muted">
-          Skis, snowboards, chaussures, casques : choisissez vos dates, on vous montre ce qui est libre.
-        </p>
-        <SearchForm categories={categories} />
-      </section>
-
-      <section className="flex flex-col gap-5">
-        <h2 className="text-2xl font-bold">Parcourir par catégorie</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/catalogue?categorie=${category.slug}`}
-              className="flex flex-col items-center gap-3 rounded-3xl border border-line bg-white p-5 text-center transition hover:border-glacier"
-            >
-              <CategoryIcon slug={category.slug} className="h-9 w-9 text-glacier" />
-              <span className="font-semibold">{category.name}</span>
-              <span className="text-xs text-muted">{category.materialCount} référence(s)</span>
-            </Link>
-          ))}
-        </div>
-      </section>
+    <div className="flex flex-col gap-16 md:gap-24">
+      <Hero categories={categories} />
+      <HowItWorks />
+      <CategoryGrid categories={categories} />
+      <FeaturedMaterials materials={pickFeatured(catalog.items.map((item) => item.material))} />
+      <WhyUs />
+      <Faq />
+      <FinalCta />
     </div>
   );
 }
