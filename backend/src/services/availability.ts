@@ -1,6 +1,7 @@
 import type { EntityManager } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { ReservationStatus } from "../entities/Reservation";
+import { Maintenance } from "../entities/Maintenance";
 import { ReservationItem } from "../entities/ReservationItem";
 
 /**
@@ -39,7 +40,29 @@ export async function reservedQuantities(
   return new Map(rows.map((row) => [row.variantId, Number(row.reserved)]));
 }
 
-/** Exemplaires encore disponibles = stock − quantités réservées sur la période. */
-export function available(stock: number, reserved: number | undefined): number {
-  return Math.max(0, stock - (reserved ?? 0));
+/**
+ * Exemplaires en maintenance (en cours) par taille. Ils sont immobilisés quelles
+ * que soient les dates, jusqu'à leur remise en service.
+ */
+export async function maintenanceQuantities(
+  variantIds: string[],
+  manager: EntityManager = AppDataSource.manager,
+): Promise<Map<string, number>> {
+  if (variantIds.length === 0) return new Map();
+  const rows = await manager
+    .getRepository(Maintenance)
+    .createQueryBuilder("maintenance")
+    .innerJoin("maintenance.variant", "variant")
+    .select("variant.id", "variantId")
+    .addSelect("SUM(maintenance.quantity)", "quantity")
+    .where("variant.id IN (:...variantIds)", { variantIds })
+    .andWhere("maintenance.endedAt IS NULL")
+    .groupBy("variant.id")
+    .getRawMany<{ variantId: string; quantity: string }>();
+  return new Map(rows.map((row) => [row.variantId, Number(row.quantity)]));
+}
+
+/** Exemplaires disponibles = stock − en maintenance − réservés sur la période. */
+export function available(stock: number, reserved: number | undefined, maintenance = 0): number {
+  return Math.max(0, stock - maintenance - (reserved ?? 0));
 }

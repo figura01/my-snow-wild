@@ -1,4 +1,24 @@
-export type Variant = { id: string; size: string; stock: number };
+export type Variant = {
+  id: string;
+  size: string;
+  stock: number;
+  /** Exemplaires actuellement en maintenance. */
+  inMaintenance: number;
+  /** Exemplaires louables : stock − maintenance. */
+  inService: number;
+};
+
+export type Maintenance = {
+  id: string;
+  quantity: number;
+  reason: string;
+  expectedReturnDate: string | null;
+  startedAt: string;
+  endedAt: string | null;
+  isActive: boolean;
+  variant: { id: string; size: string };
+  material: { id: string; name: string };
+};
 
 export type SizeAvailability = { variantId: string; size: string; available: number };
 

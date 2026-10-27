@@ -19,7 +19,7 @@ export default async function AdminReservationsPage() {
     <>
       <PageHeader title="Réservations" />
       <div className={t.wrap}>
-        <table className={`${t.table} md:min-w-[860px]`}>
+        <table className={`${t.table} lg:min-w-[860px]`}>
           <thead className={t.thead}>
             <tr>
               <th className={t.th}>Client</th>
@@ -32,19 +32,19 @@ export default async function AdminReservationsPage() {
           </thead>
           <tbody className={t.tbody}>
             {reservations.length === 0 && (
-              <tr className="block md:table-row">
+              <tr className="block lg:table-row">
                 <td colSpan={6} className={t.empty}>Aucune réservation pour l&apos;instant.</td>
               </tr>
             )}
             {reservations.map((r) => (
-              <tr key={r.id} className={`${t.tr} md:align-top`}>
+              <tr key={r.id} className={`${t.tr} lg:align-top`}>
                 <td className={t.title}>
                   <span>{r.billingFirstName} {r.billingLastName}</span>
                   <span className="block break-all text-xs font-normal text-muted">{r.billingEmail} · {r.billingPhone}</span>
                   <span className="block text-xs font-normal text-muted">{r.billingPostalCode} {r.billingCity}</span>
                 </td>
-                <td data-label="Passée le" className={`${t.td} md:whitespace-nowrap`}>{dateTime.format(new Date(r.createdAt))}</td>
-                <td data-label="Période" className={`${t.td} md:whitespace-nowrap`}>{formatDay(r.startDate)} → {formatDay(r.endDate)}</td>
+                <td data-label="Passée le" className={`${t.td} lg:whitespace-nowrap`}>{dateTime.format(new Date(r.createdAt))}</td>
+                <td data-label="Période" className={`${t.td} lg:whitespace-nowrap`}>{formatDay(r.startDate)} → {formatDay(r.endDate)}</td>
                 <td data-label="Matériel" className={t.td}>
                   <span>
                     {r.items.map((item) => (

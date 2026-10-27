@@ -3,7 +3,7 @@ import { AppDataSource } from "../data-source";
 import { MaterialVariant } from "../entities/MaterialVariant";
 import { parsePeriod } from "../utils/dates";
 import { badInput } from "../utils/errors";
-import { available, reservedQuantities } from "./availability";
+import { available, maintenanceQuantities, reservedQuantities } from "./availability";
 
 export type QuoteRequestItem = { variantId: string; quantity: number };
 
@@ -65,6 +65,7 @@ export async function buildQuote(
     : [];
   const byId = new Map(variants.map((v) => [v.id, v]));
   const reserved = await reservedQuantities(ids, period.start, period.end, manager);
+  const inMaintenance = await maintenanceQuantities(ids, manager);
 
   const lines: QuoteLine[] = ids.map((variantId) => {
     const quantity = quantities.get(variantId)!;
@@ -79,7 +80,7 @@ export async function buildQuote(
       };
     }
 
-    const free = available(variant.stock, reserved.get(variantId));
+    const free = available(variant.stock, reserved.get(variantId), inMaintenance.get(variantId));
     const ok = quantity <= free && quantity <= MAX_QUANTITY_PER_LINE;
     const price = variant.material.dailyPriceCents;
     return {

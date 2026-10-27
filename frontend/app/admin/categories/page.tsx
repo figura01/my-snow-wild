@@ -28,7 +28,7 @@ export default async function CategoriesPage() {
           </thead>
           <tbody className={t.tbody}>
             {categories.length === 0 && (
-              <tr className="block md:table-row">
+              <tr className="block lg:table-row">
                 <td colSpan={4} className={t.empty}>Aucune catégorie pour l&apos;instant.</td>
               </tr>
             )}

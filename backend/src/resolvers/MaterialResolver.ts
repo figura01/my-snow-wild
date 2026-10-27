@@ -5,6 +5,7 @@ import { Material } from "../entities/Material";
 import { MaterialVariant } from "../entities/MaterialVariant";
 import { ReservationItem } from "../entities/ReservationItem";
 import { UserRole } from "../entities/User";
+import { maintenanceQuantities } from "../services/availability";
 import { badInput, notFound } from "../utils/errors";
 import { uniqueSlug } from "../utils/uniqueSlug";
 import { MaterialInput, VariantInput } from "./catalog.inputs";
@@ -102,6 +103,21 @@ export class MaterialResolver {
         throw badInput(
           `La taille « ${removed.size} » figure dans des réservations : mets son stock à 0 au lieu de la supprimer.`,
         );
+      }
+    }
+
+    // Exemplaires en maintenance : une taille concernée ne peut pas être supprimée,
+    // et son stock ne peut pas descendre sous le nombre d'exemplaires immobilisés.
+    const inMaintenance = await maintenanceQuantities(material.variants.map((v) => v.id));
+    for (const removed of material.variants.filter((v) => !keptIds.has(v.id))) {
+      if (inMaintenance.get(removed.id)) {
+        throw badInput(`La taille « ${removed.size} » a des exemplaires en maintenance : remets-les en service avant de la supprimer.`);
+      }
+    }
+    for (const v of data.variants) {
+      const blocked = v.id ? inMaintenance.get(v.id) ?? 0 : 0;
+      if (v.stock < blocked) {
+        throw badInput(`La taille « ${v.size.trim()} » a ${blocked} exemplaire(s) en maintenance : le stock ne peut pas être inférieur.`);
       }
     }
     await variantsRepo().remove(material.variants.filter((v) => !keptIds.has(v.id)));

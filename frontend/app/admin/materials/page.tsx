@@ -18,7 +18,7 @@ export default async function MaterialsPage() {
     <>
       <PageHeader title="Matériels" action={{ href: "/admin/materials/new", label: "Nouveau matériel" }} />
       <div className={t.wrap}>
-        <table className={`${t.table} md:min-w-[720px]`}>
+        <table className={`${t.table} lg:min-w-[720px]`}>
           <thead className={t.thead}>
             <tr>
               <th className={t.th}>Référence</th>
@@ -31,7 +31,7 @@ export default async function MaterialsPage() {
           </thead>
           <tbody className={t.tbody}>
             {materials.length === 0 && (
-              <tr className="block md:table-row">
+              <tr className="block lg:table-row">
                 <td colSpan={6} className={t.empty}>Aucun matériel pour l&apos;instant.</td>
               </tr>
             )}
@@ -43,6 +43,11 @@ export default async function MaterialsPage() {
                 <td data-label="Stock" className={t.td}>
                   <span>
                     <span className="font-semibold">{material.totalStock}</span>
+                    {material.variants.some((v) => v.inMaintenance > 0) && (
+                      <span className="ml-1 text-xs font-medium text-amber-700">
+                        dont {material.variants.reduce((sum, v) => sum + v.inMaintenance, 0)} en maintenance
+                      </span>
+                    )}
                     <span className="block text-xs text-muted">
                       {material.variants.map((v) => `${v.size} : ${v.stock}`).join(" · ")}
                     </span>

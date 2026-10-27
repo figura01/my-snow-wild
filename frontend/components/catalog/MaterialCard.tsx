@@ -31,7 +31,7 @@ export function MaterialCard({
         <span className="text-xs font-semibold uppercase tracking-wide text-muted">{material.category.name}</span>
         <h3 className="text-base font-bold group-hover:text-glacier sm:text-lg">{material.name}</h3>
         <ul className="flex flex-wrap gap-1.5" aria-label="Tailles">
-          {(sizes ?? material.variants.map((v) => ({ variantId: v.id, size: v.size, available: v.stock }))).map(
+          {(sizes ?? material.variants.map((v) => ({ variantId: v.id, size: v.size, available: v.inService }))).map(
             (s) => (
               <li
                 key={s.variantId}

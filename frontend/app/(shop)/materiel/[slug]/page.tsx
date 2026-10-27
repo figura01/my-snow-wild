@@ -113,7 +113,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
               {sizes ? `Disponibilité du ${formatDay(du!)} au ${formatDay(au!)}` : "Tailles proposées"}
             </h2>
             <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {(sizes ?? material.variants.map((v) => ({ variantId: v.id, size: v.size, available: v.stock }))).map((s) => (
+              {(sizes ?? material.variants.map((v) => ({ variantId: v.id, size: v.size, available: v.inService }))).map((s) => (
                 <li
                   key={s.variantId}
                   className={`flex flex-col rounded-xl border px-3 py-2 ${s.available > 0 ? "border-line bg-white" : "border-line bg-snow text-muted"}`}

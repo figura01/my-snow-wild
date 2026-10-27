@@ -3,7 +3,7 @@ import { Arg, Field, ID, InputType, Int, ObjectType, Query, Resolver } from "typ
 import { ILike, type FindOptionsWhere } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { Material } from "../entities/Material";
-import { available, reservedQuantities } from "../services/availability";
+import { available, maintenanceQuantities, reservedQuantities } from "../services/availability";
 import { parsePeriod } from "../utils/dates";
 import { notFound } from "../utils/errors";
 
@@ -73,13 +73,16 @@ class CatalogResult {
 /** Disponibilité par taille d'une liste de matériels sur une période. */
 async function sizesAvailability(list: Material[], start: string, end: string) {
   const variantIds = list.flatMap((m) => m.variants.map((v) => v.id));
-  const reserved = await reservedQuantities(variantIds, start, end);
+  const [reserved, inMaintenance] = await Promise.all([
+    reservedQuantities(variantIds, start, end),
+    maintenanceQuantities(variantIds),
+  ]);
   return new Map(
     list.map((m) => [
       m.id,
       [...m.variants]
         .sort((a, b) => a.position - b.position)
-        .map((v) => ({ variantId: v.id, size: v.size, available: available(v.stock, reserved.get(v.id)) })),
+        .map((v) => ({ variantId: v.id, size: v.size, available: available(v.stock, reserved.get(v.id), inMaintenance.get(v.id)) })),
     ]),
   );
 }

@@ -31,7 +31,7 @@ export default async function AdminUsersPage() {
     <>
       <PageHeader title="Utilisateurs" />
       <div className={t.wrap}>
-        <table className={`${t.table} md:min-w-[760px]`}>
+        <table className={`${t.table} lg:min-w-[760px]`}>
           <thead className={t.thead}>
             <tr>
               <th className={t.th}>Nom</th>

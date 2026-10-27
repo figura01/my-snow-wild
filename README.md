@@ -76,6 +76,7 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Récapitulatif, facturation et paiement (simulé testé ; Stripe test prêt, à brancher avec les clés)
 - [x] Réservations : consultation côté admin, « Mon compte » côté client
 - [x] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous)
+- [x] Maintenance du matériel par taille (motif, retour prévu, historique, alertes sur les réservations touchées)
 - [x] Tests automatisés : Jest (API, sur une base PostgreSQL de test) et Jest + React Testing Library (front)
 - [x] CI GitHub Actions : TypeScript, tests, build, images GHCR, déploiement SSH (activable)
 - [~] Déploiement sur le VPS : images de prod, migrations, compose de prod et Caddy prêts (voir « Mise en production »)
@@ -97,8 +98,18 @@ docker compose exec -e POSTGRES_DB=snowwild_migrations backend \
 docker compose exec db dropdb -U snowwild snowwild_migrations
 ```
 
-Le fichier apparaît dans `backend/src/migrations/` : committe-le. À chaque
-modification d'entité, même commande avec un autre nom (ex. `src/migrations/AddX`).
+Le fichier apparaît dans `backend/src/migrations/` : committe-le.
+
+À chaque modification d'entité, même principe, mais en appliquant d'abord les
+migrations existantes à la base temporaire, pour ne générer que la différence :
+
+```bash
+docker compose exec db createdb -U snowwild snowwild_migrations
+docker compose exec -e POSTGRES_DB=snowwild_migrations backend npm run migration:run:dev
+docker compose exec -e POSTGRES_DB=snowwild_migrations backend \
+  npm run migration:generate -- src/migrations/AddX
+docker compose exec db dropdb -U snowwild snowwild_migrations
+```
 
 ### 2. Préparer le VPS
 
