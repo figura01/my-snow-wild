@@ -12,7 +12,8 @@
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
     "migration:run:dev": "typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
     "migration:run": "typeorm migration:run -d dist/data-source.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "images:move": "ts-node --transpile-only src/move-images.ts"
   },
   "dependencies": {
     "@apollo/server": "^5.5.0",
