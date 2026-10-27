@@ -73,6 +73,7 @@ async function main() {
   const variants = AppDataSource.getRepository(MaterialVariant);
 
   let images = 0;
+  if (!existsSync(SEED_IMAGES)) console.warn(`[seed] Dossier des visuels introuvable (${SEED_IMAGES}) : aucune photo ajoutée.`);
   for (const [categoryName, items] of Object.entries(DEMO_CATALOG)) {
     let category = await categories.findOneBy({ name: categoryName });
     if (!category) {
