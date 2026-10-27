@@ -98,7 +98,8 @@ describe("maintenance", () => {
       `query ($slug: String!) { material(slug: $slug) { variants { size stock inMaintenance inService } } }`,
       { slug: material.slug },
     );
-    expect(read.data?.material.variants[0]).toEqual({ size: "160 cm", stock: 4, inMaintenance: 1, inService: 3 });
+    const { variants: sizes } = read.data?.material as { variants: unknown[] };
+    expect(sizes[0]).toEqual({ size: "160 cm", stock: 4, inMaintenance: 1, inService: 3 });
   });
 
   it("empêche de descendre le stock sous le nombre d'exemplaires en maintenance", async () => {
