@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: { default: "Snow Wild — location de matériel de ski", template: "%s | Snow Wild" },
   description: "Réservez votre matériel de ski en ligne : skis, snowboards, chaussures, casques.",
 };
+
+// Couleur de la barre du navigateur sur mobile, assortie au logo.
+export const viewport: Viewport = { themeColor: "#1d63d6" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
