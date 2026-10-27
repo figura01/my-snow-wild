@@ -102,22 +102,46 @@ modification d'entité, même commande avec un autre nom (ex. `src/migrations/Ad
 
 ### 2. Préparer le VPS
 
+En ligne sur **https://snow-wild.laurent-vuillaume.ovh** (VPS `51.91.99.187`, utilisateur `ubuntu`).
+
 ```bash
-sudo mkdir -p /srv/snow-wild && cd /srv/snow-wild
-# y copier deploy/docker-compose.prod.yml et un .env rempli depuis deploy/.env.production.example
-docker network ls   # repérer le réseau du Caddy existant → PROXY_NETWORK dans le .env
+ssh ubuntu@51.91.99.187 "sudo mkdir -p /srv/snow-wild && sudo chown ubuntu:ubuntu /srv/snow-wild"
+scp deploy/docker-compose.prod.yml deploy/.env.production.example deploy/Caddyfile.snippet ubuntu@51.91.99.187:/srv/snow-wild/
 ```
 
-Ajouter le bloc de `deploy/Caddyfile.snippet` au Caddyfile de `/srv/vps-infra`
-(avec ton domaine), puis `docker compose restart caddy`.
+Sur le VPS, dans `/srv/snow-wild` : copier `.env.production.example` en `.env` (`chmod 600`) et
+générer les secrets sur place (`openssl rand -hex 32`). `PROXY_NETWORK=vps-infra_web` est le
+réseau du Caddy de `/srv/vps-infra`. Sur ce réseau partagé, les conteneurs sont joignables
+sous les noms uniques `snow-wild-frontend` et `snow-wild-backend`.
 
-### 3. Activer le déploiement automatique
+Ajouter `Caddyfile.snippet` à la fin de `/srv/vps-infra/Caddyfile` (après une copie de
+sauvegarde), puis :
+
+```bash
+docker exec caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+
+Premier démarrage et catalogue de démonstration :
+
+```bash
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml exec backend node dist/seed-demo.js
+```
+
+L'administrateur (`ADMIN_EMAIL` / `ADMIN_PASSWORD` du `.env`) n'est créé qu'au premier démarrage.
+
+### 3. Déploiement automatique
 
 Dans le dépôt GitHub (Settings > Secrets and variables > Actions) :
-- secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (les mêmes que pour le portfolio) ;
-- variable `DEPLOY_ENABLED` = `true`.
+- **Repository secrets** `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (clé SSH dédiée,
+  `~/.ssh/snow-wild-deploy`, autorisée sur le VPS) ;
+- **Repository variable** `DEPLOY_ENABLED` = `true` (au niveau du dépôt : elle est lue avant
+  le démarrage du job).
 
-Chaque push sur `main` vérifie le code, publie les images sur GHCR puis met à jour le VPS.
+Chaque push sur `main` vérifie le code (TypeScript, tests, build), publie les images sur GHCR,
+puis met à jour le VPS. Les migrations sont appliquées au démarrage de l'API.
 
 ### 4. Stripe en production (mode test)
 
