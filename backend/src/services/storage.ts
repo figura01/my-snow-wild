@@ -61,7 +61,7 @@ export function cloudinarySignature(params: Record<string, string>, apiSecret: s
 }
 
 // Dossier Cloudinary des photos (CLOUDINARY_FOLDER), distinct d'éventuels autres projets du même compte.
-const DEFAULT_FOLDER = "my-snow-wild/materials";
+const DEFAULT_FOLDER = "my-snow-wild-images";
 
 // Transformations appliquées à la volée par Cloudinary : format et qualité automatiques.
 const TRANSFORMS: Record<ImageVariant, string> = {
