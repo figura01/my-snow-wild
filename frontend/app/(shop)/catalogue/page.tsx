@@ -21,7 +21,7 @@ export default async function CataloguePage({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-extrabold tracking-tight">{categoryName ?? "Catalogue"}</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{categoryName ?? "Catalogue"}</h1>
         <p className="text-muted">
           {hasPeriod
             ? `Matériel disponible du ${formatDay(params.du!)} au ${formatDay(params.au!)} (${catalog.days} jour${catalog.days! > 1 ? "s" : ""}).`

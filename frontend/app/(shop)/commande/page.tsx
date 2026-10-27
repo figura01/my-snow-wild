@@ -13,7 +13,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-4xl font-extrabold tracking-tight">Commande</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Commande</h1>
       <CheckoutForm user={{ firstName: user.firstName, lastName: user.lastName, email: user.email }} />
     </div>
   );

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Panier" };
 export default function CartPage() {
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-4xl font-extrabold tracking-tight">Panier</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Panier</h1>
       <CartView />
     </div>
   );

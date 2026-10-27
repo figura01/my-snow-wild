@@ -68,36 +68,36 @@ export default async function MaterialPage({ params, searchParams }: Props) {
         ← {material.category.name}
       </Link>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <div className="flex aspect-square items-center justify-center rounded-3xl border border-line bg-gradient-to-br from-sky-50 to-slate-100">
+      <div className="grid gap-6 md:gap-10 lg:grid-cols-2">
+        <div className="flex aspect-[16/10] items-center justify-center rounded-3xl border border-line bg-gradient-to-br from-sky-50 to-slate-100 lg:aspect-square">
           {material.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={material.imageUrl} alt={material.name} className="h-full w-full object-contain p-10" />
+            <img src={material.imageUrl} alt={material.name} className="h-full w-full object-contain p-6 lg:p-10" />
           ) : (
-            <CategoryIcon slug={material.category.slug} className="h-28 w-28 text-glacier/70" />
+            <CategoryIcon slug={material.category.slug} className="h-20 w-20 text-glacier/70 lg:h-28 lg:w-28" />
           )}
         </div>
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <span className="text-sm font-semibold uppercase tracking-wide text-muted">{material.category.name}</span>
-            <h1 className="text-4xl font-extrabold tracking-tight">{material.name}</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{material.name}</h1>
             <p className="text-2xl font-bold">
               {formatPrice(material.dailyPriceCents)} <span className="text-base font-normal text-muted">/ jour</span>
             </p>
             {material.description && <p className="text-muted">{material.description}</p>}
           </div>
 
-          <form method="get" className="grid grid-cols-[1fr_1fr_auto] items-end gap-3 rounded-2xl border border-line bg-white p-4">
-            <div className="flex flex-col gap-1.5">
+          <form method="get" className="grid grid-cols-2 items-end gap-3 rounded-2xl border border-line bg-white p-4 sm:grid-cols-[1fr_1fr_auto]">
+            <div className="flex min-w-0 flex-col gap-1.5">
               <Label htmlFor="du">Du</Label>
-              <Input id="du" name="du" type="date" min={today} defaultValue={du} required />
+              <Input id="du" name="du" type="date" min={today} defaultValue={du} required className="min-w-0 px-3" />
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex min-w-0 flex-col gap-1.5">
               <Label htmlFor="au">Au</Label>
-              <Input id="au" name="au" type="date" min={today} defaultValue={au} required />
+              <Input id="au" name="au" type="date" min={today} defaultValue={au} required className="min-w-0 px-3" />
             </div>
-            <button type="submit" className={buttonVariants({ variant: "outline" })}>
+            <button type="submit" className={`${buttonVariants({ variant: "outline" })} col-span-2 sm:col-span-1`}>
               Vérifier
             </button>
           </form>

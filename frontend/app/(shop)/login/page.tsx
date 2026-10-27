@@ -17,7 +17,7 @@ export default async function LoginPage({
   if (user) redirect(next || (user.role === "ADMIN" ? "/admin" : "/"));
 
   return (
-    <div className="mx-auto w-full max-w-sm rounded-3xl border border-line bg-white p-8">
+    <div className="mx-auto w-full max-w-sm rounded-3xl border border-line bg-white p-6 sm:p-8">
       <h1 className="mb-6 text-2xl font-bold">Connexion</h1>
       <LoginForm next={next} />
       <p className="mt-6 text-center text-sm text-muted">

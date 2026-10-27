@@ -18,7 +18,7 @@ export function PageHeader({
         </Link>
       )}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold">{title}</h1>
+        <h1 className="text-2xl font-bold md:text-3xl">{title}</h1>
         {action && (
           <Link href={action.href} className={buttonVariants({ variant: "accent" })}>
             {action.label}

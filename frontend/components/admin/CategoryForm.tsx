@@ -33,7 +33,7 @@ export function CategoryForm({ category }: { category?: Category }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex max-w-xl flex-col gap-5 rounded-3xl border border-line bg-white p-6">
+    <form onSubmit={onSubmit} className="flex max-w-xl flex-col gap-5 rounded-3xl border border-line bg-white p-5 md:p-6">
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">Nom</Label>
         <Input id="name" name="name" defaultValue={category?.name} required minLength={2} maxLength={60} />

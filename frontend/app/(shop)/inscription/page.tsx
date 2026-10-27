@@ -16,7 +16,7 @@ export default async function RegisterPage({
   if (await getSessionUser()) redirect(next);
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-3xl border border-line bg-white p-8">
+    <div className="mx-auto w-full max-w-md rounded-3xl border border-line bg-white p-6 sm:p-8">
       <h1 className="mb-6 text-2xl font-bold">Créer un compte</h1>
       <RegisterForm next={next} />
       <p className="mt-6 text-center text-sm text-muted">

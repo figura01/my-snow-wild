@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/admin/PageHeader";
+import { t } from "@/components/admin/table";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDay } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
@@ -17,42 +18,44 @@ export default async function AdminReservationsPage() {
   return (
     <>
       <PageHeader title="Réservations" />
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white">
-        <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="border-b border-line bg-snow text-xs uppercase tracking-wide text-muted">
+      <div className={t.wrap}>
+        <table className={`${t.table} md:min-w-[860px]`}>
+          <thead className={t.thead}>
             <tr>
-              <th className="px-4 py-3">Passée le</th>
-              <th className="px-4 py-3">Client</th>
-              <th className="px-4 py-3">Période</th>
-              <th className="px-4 py-3">Matériel</th>
-              <th className="px-4 py-3">Total</th>
-              <th className="px-4 py-3">Statut</th>
+              <th className={t.th}>Client</th>
+              <th className={t.th}>Passée le</th>
+              <th className={t.th}>Période</th>
+              <th className={t.th}>Matériel</th>
+              <th className={t.th}>Total</th>
+              <th className={t.th}>Statut</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={t.tbody}>
             {reservations.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted">Aucune réservation pour l&apos;instant.</td>
+              <tr className="block md:table-row">
+                <td colSpan={6} className={t.empty}>Aucune réservation pour l&apos;instant.</td>
               </tr>
             )}
             {reservations.map((r) => (
-              <tr key={r.id} className="border-b border-line align-top last:border-0">
-                <td className="px-4 py-3 whitespace-nowrap">{dateTime.format(new Date(r.createdAt))}</td>
-                <td className="px-4 py-3">
-                  <span className="font-medium">{r.billingFirstName} {r.billingLastName}</span>
-                  <span className="block text-xs text-muted">{r.billingEmail} · {r.billingPhone}</span>
-                  <span className="block text-xs text-muted">{r.billingPostalCode} {r.billingCity}</span>
+              <tr key={r.id} className={`${t.tr} md:align-top`}>
+                <td className={t.title}>
+                  <span>{r.billingFirstName} {r.billingLastName}</span>
+                  <span className="block break-all text-xs font-normal text-muted">{r.billingEmail} · {r.billingPhone}</span>
+                  <span className="block text-xs font-normal text-muted">{r.billingPostalCode} {r.billingCity}</span>
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap">{formatDay(r.startDate)} → {formatDay(r.endDate)}</td>
-                <td className="px-4 py-3">
-                  {r.items.map((item) => (
-                    <span key={item.id} className="block">
-                      {item.quantity} × {item.material.name} ({item.variant.size})
-                    </span>
-                  ))}
+                <td data-label="Passée le" className={`${t.td} md:whitespace-nowrap`}>{dateTime.format(new Date(r.createdAt))}</td>
+                <td data-label="Période" className={`${t.td} md:whitespace-nowrap`}>{formatDay(r.startDate)} → {formatDay(r.endDate)}</td>
+                <td data-label="Matériel" className={t.td}>
+                  <span>
+                    {r.items.map((item) => (
+                      <span key={item.id} className="block">
+                        {item.quantity} × {item.material.name} ({item.variant.size})
+                      </span>
+                    ))}
+                  </span>
                 </td>
-                <td className="px-4 py-3 font-semibold">{formatPrice(r.totalCents)}</td>
-                <td className="px-4 py-3"><StatusBadge reservation={r} /></td>
+                <td data-label="Total" className={`${t.td} font-semibold`}>{formatPrice(r.totalCents)}</td>
+                <td data-label="Statut" className={t.td}><StatusBadge reservation={r} /></td>
               </tr>
             ))}
           </tbody>

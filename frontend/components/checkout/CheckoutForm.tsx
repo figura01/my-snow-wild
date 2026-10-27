@@ -74,7 +74,7 @@ export function CheckoutForm({ user }: Props) {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
-      <form onSubmit={onSubmit} className="flex flex-col gap-5 rounded-3xl border border-line bg-white p-6">
+      <form onSubmit={onSubmit} className="flex flex-col gap-5 rounded-3xl border border-line bg-white p-5 sm:p-6">
         <h2 className="text-xl font-bold">Informations de facturation</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {fields.map((f) => (
@@ -106,7 +106,7 @@ export function CheckoutForm({ user }: Props) {
         </p>
       </form>
 
-      <aside className="flex h-fit flex-col gap-4 rounded-3xl border border-line bg-white p-6">
+      <aside className="flex h-fit flex-col gap-4 rounded-3xl border border-line bg-white p-5 sm:p-6 lg:sticky lg:top-24">
         <h2 className="text-xl font-bold">Votre réservation</h2>
         <p className="text-sm text-muted">
           Du {formatDay(period.startDate)} au {formatDay(period.endDate)}

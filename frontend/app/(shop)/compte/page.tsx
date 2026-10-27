@@ -21,7 +21,7 @@ export default async function AccountPage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-4xl font-extrabold tracking-tight">Mon compte</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Mon compte</h1>
         <p className="text-muted">
           {user.firstName} {user.lastName} · {user.email}
         </p>

@@ -1,5 +1,6 @@
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { t } from "@/components/admin/table";
 import { serverGraphql } from "@/lib/server/graphql";
 import { getSessionUser } from "@/lib/server/session";
 import { RoleSelect } from "./RoleSelect";
@@ -29,34 +30,34 @@ export default async function AdminUsersPage() {
   return (
     <>
       <PageHeader title="Utilisateurs" />
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white">
-        <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="border-b border-line bg-snow text-xs uppercase tracking-wide text-muted">
+      <div className={t.wrap}>
+        <table className={`${t.table} md:min-w-[760px]`}>
+          <thead className={t.thead}>
             <tr>
-              <th className="px-4 py-3">Nom</th>
-              <th className="px-4 py-3">E-mail</th>
-              <th className="px-4 py-3">Inscrit le</th>
-              <th className="px-4 py-3">Réservations</th>
-              <th className="px-4 py-3">Rôle</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className={t.th}>Nom</th>
+              <th className={t.th}>E-mail</th>
+              <th className={t.th}>Inscrit le</th>
+              <th className={t.th}>Réservations</th>
+              <th className={t.th}>Rôle</th>
+              <th className={`${t.th} text-right`}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={t.tbody}>
             {adminUsers.map((user) => {
               const label = `${user.firstName} ${user.lastName}`;
               const isMe = user.id === me?.id;
               return (
-                <tr key={user.id} className="border-b border-line last:border-0">
-                  <td className="px-4 py-3 font-medium">
-                    {label} {isMe && <span className="text-xs text-muted">(vous)</span>}
+                <tr key={user.id} className={t.tr}>
+                  <td className={t.title}>
+                    {label} {isMe && <span className="text-xs font-normal text-muted">(vous)</span>}
                   </td>
-                  <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3">{day.format(new Date(user.createdAt))}</td>
-                  <td className="px-4 py-3">{user.reservationCount}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="E-mail" className={`${t.td} break-all`}>{user.email}</td>
+                  <td data-label="Inscrit le" className={t.td}>{day.format(new Date(user.createdAt))}</td>
+                  <td data-label="Réservations" className={t.td}>{user.reservationCount}</td>
+                  <td data-label="Rôle" className={`${t.td} items-center`}>
                     {isMe ? <span className="text-sm">Admin</span> : <RoleSelect id={user.id} role={user.role} label={label} />}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className={t.actions}>
                     {!isMe && <DeleteButton kind="user" id={user.id} label={label} />}
                   </td>
                 </tr>

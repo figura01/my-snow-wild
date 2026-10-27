@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { t } from "@/components/admin/table";
 import { CATEGORY_FIELDS } from "@/lib/graphql/catalog";
 import { serverGraphql } from "@/lib/server/graphql";
 import type { Category } from "@/lib/types";
@@ -15,28 +16,28 @@ export default async function CategoriesPage() {
   return (
     <>
       <PageHeader title="Catégories" action={{ href: "/admin/categories/new", label: "Nouvelle catégorie" }} />
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-line bg-snow text-xs uppercase tracking-wide text-muted">
+      <div className={t.wrap}>
+        <table className={t.table}>
+          <thead className={t.thead}>
             <tr>
-              <th className="px-4 py-3">Nom</th>
-              <th className="px-4 py-3">Slug</th>
-              <th className="px-4 py-3">Matériels</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className={t.th}>Nom</th>
+              <th className={t.th}>Slug</th>
+              <th className={t.th}>Matériels</th>
+              <th className={`${t.th} text-right`}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={t.tbody}>
             {categories.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-muted">Aucune catégorie pour l&apos;instant.</td>
+              <tr className="block md:table-row">
+                <td colSpan={4} className={t.empty}>Aucune catégorie pour l&apos;instant.</td>
               </tr>
             )}
             {categories.map((category) => (
-              <tr key={category.id} className="border-b border-line last:border-0">
-                <td className="px-4 py-3 font-medium">{category.name}</td>
-                <td className="px-4 py-3 font-mono text-xs text-muted">{category.slug}</td>
-                <td className="px-4 py-3">{category.materialCount}</td>
-                <td className="px-4 py-3">
+              <tr key={category.id} className={t.tr}>
+                <td className={t.title}>{category.name}</td>
+                <td data-label="Slug" className={`${t.td} font-mono text-xs text-muted`}>{category.slug}</td>
+                <td data-label="Matériels" className={t.td}>{category.materialCount}</td>
+                <td className={t.actions}>
                   <div className="flex items-center justify-end gap-2">
                     <Link href={`/admin/categories/${category.id}`} className="text-sm font-semibold text-glacier hover:underline">
                       Modifier

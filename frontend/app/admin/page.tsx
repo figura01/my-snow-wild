@@ -21,7 +21,7 @@ export default async function AdminDashboard() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Tableau de bord</h1>
+        <h1 className="text-2xl font-bold md:text-3xl">Tableau de bord</h1>
         <p className="text-muted">Bonjour {me?.firstName}.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">

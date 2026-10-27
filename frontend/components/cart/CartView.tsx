@@ -57,7 +57,7 @@ export function CartView() {
         <div className="flex flex-col gap-3 rounded-2xl border border-line bg-white p-5">
           {editingDates ? (
             <form
-              className="grid grid-cols-[1fr_1fr_auto] items-end gap-3"
+              className="grid grid-cols-2 items-end gap-3 sm:grid-cols-[1fr_1fr_auto]"
               onSubmit={(e) => {
                 e.preventDefault();
                 const form = new FormData(e.currentTarget);
@@ -65,15 +65,15 @@ export function CartView() {
                 setEditingDates(false);
               }}
             >
-              <div className="flex flex-col gap-1.5">
+              <div className="flex min-w-0 flex-col gap-1.5">
                 <Label htmlFor="du">Du</Label>
-                <Input id="du" name="du" type="date" min={todayIso()} defaultValue={period.startDate} required />
+                <Input id="du" name="du" type="date" min={todayIso()} defaultValue={period.startDate} required className="min-w-0 px-3" />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex min-w-0 flex-col gap-1.5">
                 <Label htmlFor="au">Au</Label>
-                <Input id="au" name="au" type="date" min={todayIso()} defaultValue={period.endDate} required />
+                <Input id="au" name="au" type="date" min={todayIso()} defaultValue={period.endDate} required className="min-w-0 px-3" />
               </div>
-              <Button type="submit" variant="outline">Valider</Button>
+              <Button type="submit" variant="outline" className="col-span-2 sm:col-span-1">Valider</Button>
             </form>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-3">
