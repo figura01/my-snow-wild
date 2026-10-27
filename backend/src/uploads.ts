@@ -8,7 +8,7 @@ import { addMaterialImage, IMAGE_TYPES, imageUrl, MAX_IMAGE_BYTES } from "./serv
 
 /**
  * Photos des matériels :
- * - GET  /uploads/<fichier>                   : fichiers envoyés, servis tels quels (cache long, noms uniques) ;
+ * - GET  /uploads/<fichier>                   : photos du stockage local, servies telles quelles (cache long, noms uniques) ;
  * - POST /api/materials/:id/images?alt=…      : envoi d'une photo (ADMIN), le corps est l'image brute.
  * Le reste de la gestion (ordre, texte alternatif, suppression) passe par GraphQL.
  */
@@ -60,7 +60,7 @@ export function uploadsRouter(): Router {
       try {
         const alt = typeof req.query.alt === "string" ? req.query.alt : "";
         const image = await addMaterialImage(String(req.params.id), req.body, alt);
-        res.status(201).json({ id: image.id, url: imageUrl(image), alt: image.alt, position: image.position });
+        res.status(201).json({ id: image.id, url: imageUrl(image), thumbUrl: imageUrl(image, "thumb"), alt: image.alt, position: image.position });
       } catch (error) {
         if (error instanceof GraphQLError) {
           res.status(error.extensions.code === "NOT_FOUND" ? 404 : 400).json({ error: error.message });

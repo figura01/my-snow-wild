@@ -100,8 +100,13 @@ export function CartView() {
             const q = quoteLine(line.variantId);
             return (
               <li key={line.variantId} className="flex gap-4 rounded-2xl border border-line bg-surface p-4">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-snow">
-                  <CategoryIcon slug={line.categorySlug} className="h-8 w-8 text-glacier/70" />
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-snow">
+                  {line.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={line.imageUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <CategoryIcon slug={line.categorySlug} className="h-8 w-8 text-glacier/70" />
+                  )}
                 </div>
                 <div className="flex flex-1 flex-col gap-2">
                   <div className="flex flex-wrap items-start justify-between gap-2">

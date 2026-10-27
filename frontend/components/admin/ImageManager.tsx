@@ -111,7 +111,7 @@ export function ImageManager({ materialId, materialName, images }: { materialId:
             <li key={image.id} className="flex flex-col gap-2">
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-line bg-snow">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image.url} alt={image.alt} className="h-full w-full object-cover" />
+                <img src={image.thumbUrl} alt={image.alt} className="h-full w-full object-cover" />
                 {index === 0 && (
                   <span className="absolute left-2 top-2 rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-white">
                     Principale

@@ -39,7 +39,7 @@ export const LEVEL_LABELS: Record<MaterialLevel, string> = {
   EXPERT: "Confirmé",
 };
 
-export type MaterialImage = { id: string; url: string; alt: string; position: number };
+export type MaterialImage = { id: string; url: string; thumbUrl: string; alt: string; position: number };
 
 export type Material = {
   id: string;
@@ -49,6 +49,8 @@ export type Material = {
   imageUrl: string | null;
   /** Photo principale (première de la galerie), ou ancienne URL d'image. */
   coverUrl: string | null;
+  /** Photo principale en vignette (catalogue). */
+  coverThumbUrl: string | null;
   images: MaterialImage[];
   level: MaterialLevel | null;
   features: string[];

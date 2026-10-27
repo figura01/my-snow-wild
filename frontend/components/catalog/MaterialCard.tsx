@@ -20,9 +20,9 @@ export function MaterialCard({
       className="group flex overflow-hidden rounded-3xl border border-line bg-surface transition hover:-translate-y-1 hover:shadow-lg sm:flex-col"
     >
       <div className="flex w-28 shrink-0 items-center justify-center bg-gradient-to-br from-sky-50 dark:from-[#15284c] to-slate-100 dark:to-[#101a2c] sm:aspect-[4/3] sm:w-auto">
-        {material.coverUrl ? (
+        {material.coverThumbUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={material.coverUrl} alt={material.name} className="h-full w-full object-contain p-3 sm:p-6" />
+          <img src={material.coverThumbUrl} alt={material.name} className="h-full w-full object-cover" />
         ) : (
           <CategoryIcon slug={material.category.slug} className="h-10 w-10 text-glacier/70 sm:h-16 sm:w-16" />
         )}

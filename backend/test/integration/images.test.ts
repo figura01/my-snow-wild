@@ -14,7 +14,7 @@ const PNG = Buffer.from(
   "base64",
 );
 
-const IMAGES = `query ($slug: String!) { material(slug: $slug) { coverUrl images { id url alt position } } }`;
+const IMAGES = `query ($slug: String!) { material(slug: $slug) { coverUrl coverThumbUrl images { id url thumbUrl alt position } } }`;
 
 describe("photos des matériels", () => {
   it("enregistre le fichier sous un nom aléatoire et l'expose dans l'ordre", async () => {
@@ -22,14 +22,17 @@ describe("photos des matériels", () => {
     const first = await addMaterialImage(material.id, PNG, "Vue de face");
     const second = await addMaterialImage(material.id, PNG);
 
-    expect(first.filename).toMatch(/^[0-9a-f-]{36}\.png$/);
-    expect(existsSync(path.join(env.uploadDir, first.filename))).toBe(true);
+    expect(first.storage).toBe("local");
+    expect(first.key).toMatch(/^[0-9a-f-]{36}\.png$/);
+    expect(existsSync(path.join(env.uploadDir, first.key))).toBe(true);
 
     const { data } = await gql(IMAGES, { slug: material.slug });
-    const read = data?.material as { coverUrl: string; images: { id: string; url: string; alt: string }[] };
+    const read = data?.material as { coverUrl: string; coverThumbUrl: string; images: { id: string; url: string; alt: string }[] };
     expect(read.images.map((i) => i.id)).toEqual([first.id, second.id]);
-    expect(read.images[0]).toMatchObject({ url: `/uploads/${first.filename}`, alt: "Vue de face" });
-    expect(read.coverUrl).toBe(`/uploads/${first.filename}`);
+    // Stockage local : pas de redimensionnement, la même adresse sert pour les deux formats.
+    expect(read.images[0]).toMatchObject({ url: `/uploads/${first.key}`, thumbUrl: `/uploads/${first.key}`, alt: "Vue de face" });
+    expect(read.coverUrl).toBe(`/uploads/${first.key}`);
+    expect(read.coverThumbUrl).toBe(`/uploads/${first.key}`);
   });
 
   it("refuse un fichier qui n'est pas une image JPEG, PNG ou WebP", async () => {
@@ -57,7 +60,7 @@ describe("photos des matériels", () => {
     await gql(`mutation ($id: ID!) { updateMaterialImageAlt(id: $id, alt: "Semelle") { alt } }`, { id: a.id }, admin);
     const removed = await gql(`mutation ($id: ID!) { deleteMaterialImage(id: $id) }`, { id: b.id }, admin);
     expect(removed.errors).toBeUndefined();
-    expect(existsSync(path.join(env.uploadDir, b.filename))).toBe(false);
+    expect(existsSync(path.join(env.uploadDir, b.key))).toBe(false);
 
     const { data } = await gql(IMAGES, { slug: material.slug });
     expect((data?.material as { images: unknown[] }).images).toEqual([

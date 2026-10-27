@@ -50,6 +50,7 @@ services:
       - ./backend/tsconfig.test.json:/app/tsconfig.test.json
       - backend_node_modules:/app/node_modules
       - backend_uploads:/app/uploads
+      - ./backend/seed-images:/app/seed-images
     env_file: .env
     environment:
       DB_HOST: db

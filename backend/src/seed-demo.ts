@@ -2,11 +2,17 @@
 // Lancement : docker compose exec backend npm run seed:demo
 // Idempotent : relancer le script ne crée pas de doublons.
 import "reflect-metadata";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { AppDataSource } from "./data-source";
 import { Category } from "./entities/Category";
 import { Material, MaterialLevel } from "./entities/Material";
 import { MaterialVariant } from "./entities/MaterialVariant";
+import { addMaterialImage } from "./services/images";
 import { slugify } from "./utils/slugify";
+
+// Visuels de démonstration (un par matériel, nommés d'après son slug) : backend/seed-images.
+const SEED_IMAGES = path.resolve(__dirname, "..", "seed-images");
 
 type Item = {
   name: string;
@@ -66,6 +72,7 @@ async function main() {
   const materials = AppDataSource.getRepository(Material);
   const variants = AppDataSource.getRepository(MaterialVariant);
 
+  let images = 0;
   for (const [categoryName, items] of Object.entries(DEMO_CATALOG)) {
     let category = await categories.findOneBy({ name: categoryName });
     if (!category) {
@@ -74,32 +81,39 @@ async function main() {
     for (const item of items) {
       const slug = slugify(item.name);
       const details = DETAILS[item.name] ?? {};
-      const existing = await materials.findOneBy({ slug });
-      if (existing) {
-        if (existing.features.length === 0 && details.features) {
-          await materials.update(existing.id, { level: details.level ?? null, features: details.features });
+      let material = await materials.findOneBy({ slug });
+      if (material) {
+        if (material.features.length === 0 && details.features) {
+          await materials.update(material.id, { level: details.level ?? null, features: details.features });
         }
-        continue;
+      } else {
+        material = await materials.save(
+          materials.create({
+            name: item.name,
+            slug,
+            description: item.description,
+            dailyPriceCents: item.price * 100,
+            level: details.level ?? null,
+            features: details.features ?? [],
+            isActive: true,
+            category,
+            variants: Object.entries(item.sizes).map(([size, stock], position) =>
+              variants.create({ size, stock, position }),
+            ),
+          }),
+        );
       }
-      await materials.save(
-        materials.create({
-          name: item.name,
-          slug,
-          description: item.description,
-          dailyPriceCents: item.price * 100,
-          level: details.level ?? null,
-          features: details.features ?? [],
-          isActive: true,
-          category,
-          variants: Object.entries(item.sizes).map(([size, stock], position) =>
-            variants.create({ size, stock, position }),
-          ),
-        }),
-      );
+
+      // Visuel de démonstration, seulement pour un matériel encore sans photo.
+      const file = path.join(SEED_IMAGES, `${slug}.jpg`);
+      if ((material.images ?? []).length === 0 && existsSync(file)) {
+        await addMaterialImage(material.id, readFileSync(file), item.name);
+        images++;
+      }
     }
   }
 
-  console.log(`[seed] ${await categories.count()} catégories, ${await materials.count()} matériels.`);
+  console.log(`[seed] ${await categories.count()} catégories, ${await materials.count()} matériels, ${images} visuel(s) ajouté(s).`);
   await AppDataSource.destroy();
 }
 

@@ -182,7 +182,7 @@ export default async function MaterialPage({ params, searchParams }: Props) {
               slug: material.slug,
               name: material.name,
               categorySlug: material.category.slug,
-              imageUrl: material.coverUrl,
+              imageUrl: material.coverThumbUrl,
               dailyPriceCents: material.dailyPriceCents,
             }}
             sizes={sizes}

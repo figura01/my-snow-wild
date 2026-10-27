@@ -14,6 +14,8 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
 COPY --from=build /app/dist ./dist
+# Visuels du catalogue de démonstration (node dist/seed-demo.js).
+COPY seed-images ./seed-images
 # Dossier des photos (volume en production), accessible à l'utilisateur « node ».
 RUN mkdir -p /app/uploads && chown node:node /app/uploads
 USER node

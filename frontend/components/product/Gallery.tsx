@@ -35,7 +35,7 @@ export function Gallery({ images, name, categorySlug }: { images: MaterialImage[
                 )}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt="" className="h-full w-full object-cover" />
+                <img src={img.thumbUrl} alt="" className="h-full w-full object-cover" />
               </button>
             </li>
           ))}

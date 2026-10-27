@@ -1,12 +1,9 @@
-import { randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { In } from "typeorm";
-import { env } from "../config/env";
 import { AppDataSource } from "../data-source";
 import { Material } from "../entities/Material";
 import { MaterialImage } from "../entities/MaterialImage";
 import { badInput, notFound } from "../utils/errors";
+import { activeStorage, storageFor, type ImageVariant } from "./storage";
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_IMAGES_PER_MATERIAL = 8;
@@ -30,7 +27,8 @@ export function detectImageType(buffer: Buffer): "jpg" | "png" | "webp" | null {
   return null;
 }
 
-export const imageUrl = (image: Pick<MaterialImage, "filename">) => `/uploads/${image.filename}`;
+export const imageUrl = (image: Pick<MaterialImage, "storage" | "key">, variant: ImageVariant = "large") =>
+  storageFor(image.storage).url(image.key, variant);
 
 /** Ajoute une photo à la fin de la galerie d'un matériel. */
 export async function addMaterialImage(materialId: string, buffer: Buffer, alt = ""): Promise<MaterialImage> {
@@ -45,38 +43,38 @@ export async function addMaterialImage(materialId: string, buffer: Buffer, alt =
     throw badInput(`${MAX_IMAGES_PER_MATERIAL} photos au maximum par matériel.`);
   }
 
-  const filename = `${randomUUID()}.${ext}`;
-  await mkdir(env.uploadDir, { recursive: true });
-  await writeFile(path.join(env.uploadDir, filename), buffer, { flag: "wx" });
-
+  const key = await activeStorage.save(buffer, ext);
   const position = Math.max(-1, ...material.images.map((i) => i.position)) + 1;
   try {
-    return await images().save(images().create({ material: { id: materialId }, filename, alt: alt.trim().slice(0, 200), position }));
+    return await images().save(
+      images().create({ material: { id: materialId }, storage: activeStorage.name, key, alt: alt.trim().slice(0, 200), position }),
+    );
   } catch (error) {
-    await removeFile(filename);
+    await activeStorage.remove(key).catch(() => undefined);
     throw error;
   }
 }
 
-async function removeFile(filename: string) {
-  // Le nom vient de la base (généré par l'API) : on vérifie quand même qu'il ne sort pas du dossier.
-  const target = path.join(env.uploadDir, path.basename(filename));
-  await unlink(target).catch((error: NodeJS.ErrnoException) => {
-    if (error.code !== "ENOENT") throw error;
-  });
+/** Supprime le fichier d'une photo ; un échec est journalisé sans bloquer (fichier orphelin au pire). */
+async function removeFile(image: MaterialImage) {
+  try {
+    await storageFor(image.storage).remove(image.key);
+  } catch (error) {
+    console.error("[images] suppression du fichier impossible", image.storage, image.key, error);
+  }
 }
 
 export async function deleteMaterialImage(id: string): Promise<void> {
   const image = await images().findOneBy({ id });
   if (!image) throw notFound("Photo");
-  await images().remove(image);
-  await removeFile(image.filename);
+  await images().remove({ ...image });
+  await removeFile(image);
 }
 
 /** Supprime les fichiers de toutes les photos d'un matériel (avant sa suppression). */
 export async function deleteFilesOf(materialId: string): Promise<void> {
   const list = await images().find({ where: { material: { id: materialId } } });
-  await Promise.all(list.map((image) => removeFile(image.filename)));
+  await Promise.all(list.map((image) => removeFile(image)));
 }
 
 /** Nouvel ordre de la galerie : la liste doit contenir exactement les photos du matériel. */

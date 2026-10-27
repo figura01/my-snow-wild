@@ -48,10 +48,16 @@ export class MaterialResolver {
     return [...(material.images ?? [])].sort((a, b) => a.position - b.position);
   }
 
-  @FieldResolver(() => String, { nullable: true, description: "Photo principale (ou ancienne URL d'image)." })
+  @FieldResolver(() => String, { nullable: true, description: "Photo principale, grand format (ou ancienne URL d'image)." })
   coverUrl(@Root() material: Material): string | null {
     const first = this.images(material)[0];
     return first ? imageUrl(first) : material.imageUrl ?? null;
+  }
+
+  @FieldResolver(() => String, { nullable: true, description: "Photo principale, format vignette (catalogue)." })
+  coverThumbUrl(@Root() material: Material): string | null {
+    const first = this.images(material)[0];
+    return first ? imageUrl(first, "thumb") : material.imageUrl ?? null;
   }
 
   @FieldResolver(() => Int, { description: "Stock total, toutes tailles confondues." })
@@ -211,8 +217,13 @@ export class MaterialResolver {
 // Champs calculés des photos.
 @Resolver(() => MaterialImage)
 export class MaterialImageResolver {
-  @FieldResolver(() => String, { description: "Adresse du fichier, sur le même domaine que le site." })
+  @FieldResolver(() => String, { description: "Grand format (fiche produit)." })
   url(@Root() image: MaterialImage): string {
-    return imageUrl(image);
+    return imageUrl(image, "large");
+  }
+
+  @FieldResolver(() => String, { description: "Vignette (catalogue, miniatures)." })
+  thumbUrl(@Root() image: MaterialImage): string {
+    return imageUrl(image, "thumb");
   }
 }
