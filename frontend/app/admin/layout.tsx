@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { Logo } from "@/components/layout/Logo";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 import { getSessionUser } from "@/lib/server/session";
 
@@ -25,9 +26,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Mobile : barre du haut avec navigation défilante. Desktop : colonne latérale. */}
       <aside className="flex flex-col gap-3 bg-ink px-4 pb-3 pt-4 text-white md:sticky md:top-0 md:h-screen md:w-64 md:gap-6 md:p-5">
         <div className="flex items-center justify-between">
-          <Link href="/admin" className="text-lg font-extrabold tracking-tight">
-            SNOW<span className="text-sky-300">WILD</span>
-            <span className="ml-2 rounded-md bg-white/10 px-2 py-0.5 text-xs font-medium">admin</span>
+          <Link href="/admin" className="flex items-center gap-2" aria-label="Back-office Snow Wild">
+            <Logo tone="dark" />
+            <span className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-medium">admin</span>
           </Link>
           <Link href="/" className="text-sm text-white/60 hover:text-white md:hidden">
             ← Site

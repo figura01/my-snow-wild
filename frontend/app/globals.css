@@ -8,6 +8,7 @@
   --color-muted: #5a6478;
   --color-line: #e3e8f0;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-logo: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
