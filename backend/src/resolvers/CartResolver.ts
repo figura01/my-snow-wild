@@ -1,5 +1,8 @@
 import { ArrayMaxSize, IsInt, IsUUID, Max, Min, ValidateNested } from "class-validator";
-import { Arg, Field, ID, InputType, Int, ObjectType, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Field, ID, InputType, Int, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import type { Context } from "../auth/context";
+import { Reservation } from "../entities/Reservation";
+import { findDraft, saveDraft } from "../services/cart";
 import { buildQuote, MAX_LINES, MAX_QUANTITY_PER_LINE } from "../services/quote";
 
 @InputType()
@@ -16,7 +19,7 @@ export class CartItemInput {
 }
 
 @InputType()
-class CartInput {
+export class CartInput {
   @Field({ description: "AAAA-MM-JJ" })
   startDate: string;
 
@@ -61,5 +64,19 @@ export class CartResolver {
   })
   quoteCart(@Arg("cart") cart: CartInput): Promise<CartQuote> {
     return buildQuote(cart.startDate, cart.endDate, cart.items);
+  }
+
+  // --- Panier en base (client connecté) -----------------------------------------
+
+  @Authorized()
+  @Query(() => Reservation, { nullable: true, description: "Panier en cours du client (réservation DRAFT)." })
+  myCart(@Ctx() ctx: Context): Promise<Reservation | null> {
+    return findDraft(ctx.user!.sub);
+  }
+
+  @Authorized()
+  @Mutation(() => Reservation, { nullable: true, description: "Enregistre le panier du client ; vide, il est supprimé." })
+  saveCart(@Arg("cart") cart: CartInput, @Ctx() ctx: Context): Promise<Reservation | null> {
+    return saveDraft(ctx.user!.sub, cart);
   }
 }

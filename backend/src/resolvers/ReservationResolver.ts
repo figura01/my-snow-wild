@@ -157,8 +157,10 @@ export class ReservationResolver {
   // --- Back-office ----------------------------------------------------------
 
   @Authorized(UserRole.ADMIN)
-  @Query(() => [Reservation])
-  adminReservations(): Promise<Reservation[]> {
-    return allReservations();
+  @Query(() => [Reservation], { description: "Réservations, filtrables par statut (paniers exclus par défaut)." })
+  adminReservations(
+    @Arg("statuses", () => [ReservationStatus], { nullable: true }) statuses: ReservationStatus[] | null,
+  ): Promise<Reservation[]> {
+    return allReservations(statuses ?? undefined);
   }
 }

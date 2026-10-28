@@ -12,9 +12,19 @@ import {
 import { ReservationItem } from "./ReservationItem";
 import { User } from "./User";
 
+/**
+ * Cycle de vie d'une réservation :
+ *   DRAFT ──(commande)──▶ PENDING ──(paiement)──▶ PAID
+ *                            │
+ *                            ├──(délai dépassé)──▶ EXPIRED
+ *                            └──(abandon Stripe)─▶ CANCELLED
+ * Seules PAID et PENDING (dans son délai) bloquent du matériel.
+ */
 export enum ReservationStatus {
-  PENDING = "PENDING", // créée, en attente de paiement
+  DRAFT = "DRAFT", // panier d'un client connecté, pas encore commandé : ne bloque rien
+  PENDING = "PENDING", // commandée, en attente de paiement : bloque le matériel pendant le délai
   PAID = "PAID", // payée : le matériel est bloqué sur la période
+  EXPIRED = "EXPIRED", // non payée dans le délai : le matériel est libéré
   CANCELLED = "CANCELLED", // annulée : le matériel est de nouveau disponible
 }
 
@@ -82,6 +92,7 @@ export class Reservation {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Field({ description: "Dernière modification (utile pour les paniers en cours)." })
   @UpdateDateColumn()
   updatedAt: Date;
 }

@@ -29,6 +29,8 @@ type CartState = {
   setQuantity: (variantId: string, quantity: number) => void;
   removeLine: (variantId: string) => void;
   setPeriod: (period: Period) => void;
+  /** Remplace tout le panier (synchronisation avec le panier enregistré du compte). */
+  replace: (period: Period | null, lines: CartLine[]) => void;
   clear: () => void;
 };
 
@@ -71,6 +73,8 @@ export const useCart = create<CartState>()(
         }),
 
       setPeriod: (period) => set({ period }),
+
+      replace: (period, lines) => set({ period: lines.length ? period : null, lines }),
 
       clear: () => set({ lines: [], period: null }),
     }),

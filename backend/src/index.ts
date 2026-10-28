@@ -12,11 +12,17 @@ import { uploadsRouter } from "./uploads";
 import { paymentMode } from "./services/payment";
 import { buildAppSchema } from "./schema";
 import { ensureAdmin } from "./seed-admin";
+import { expireStaleReservations } from "./services/reservations";
 
 async function main() {
   await AppDataSource.initialize();
   console.log("[db] Connecté à PostgreSQL");
   await ensureAdmin();
+
+  // Réservations non payées dans le délai : statut EXPIRED, au démarrage puis chaque minute.
+  const expire = () => expireStaleReservations().catch((error) => console.error("[expiration]", error));
+  await expire();
+  setInterval(expire, 60_000).unref();
 
   const schema = await buildAppSchema();
 

@@ -1,8 +1,10 @@
+import { In, Not } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { MaterialVariant } from "../entities/MaterialVariant";
 import { PAYMENT_DELAY_MINUTES, Reservation, ReservationStatus } from "../entities/Reservation";
 import { ReservationItem } from "../entities/ReservationItem";
 import { badInput } from "../utils/errors";
+import { deleteDraft } from "./cart";
 import { buildQuote, type QuoteRequestItem } from "./quote";
 
 export type Billing = {
@@ -69,7 +71,10 @@ export async function createPendingReservation(
         }),
       ),
     });
-    return (await manager.save(reservation)).id;
+    const saved = await manager.save(reservation);
+    // Le panier en base du client devient cette commande : on le supprime.
+    await deleteDraft(userId, manager);
+    return saved.id;
   });
 
   return findReservation(id);
@@ -100,17 +105,35 @@ export async function markCancelled(id: string): Promise<void> {
 }
 
 export const isExpired = (r: Reservation) =>
-  r.status === ReservationStatus.PENDING && !!r.expiresAt && r.expiresAt.getTime() <= Date.now();
+  r.status === ReservationStatus.EXPIRED ||
+  (r.status === ReservationStatus.PENDING && !!r.expiresAt && r.expiresAt.getTime() <= Date.now());
 
+/**
+ * Passe en EXPIRED les réservations en attente dont le délai de paiement est dépassé.
+ * Lancé au démarrage puis chaque minute ; la disponibilité ne dépend pas de ce passage
+ * (une réservation en attente expirée ne bloque déjà plus rien), il rend juste le statut explicite.
+ */
+export async function expireStaleReservations(): Promise<number> {
+  const result = await AppDataSource.getRepository(Reservation)
+    .createQueryBuilder()
+    .update()
+    .set({ status: ReservationStatus.EXPIRED })
+    .where("status = :pending AND expiresAt <= now()", { pending: ReservationStatus.PENDING })
+    .execute();
+  return result.affected ?? 0;
+}
+
+// Les paniers (DRAFT) ne sont pas des réservations : exclus des listes.
 export const userReservations = (userId: string) =>
   AppDataSource.getRepository(Reservation).find({
-    where: { user: { id: userId } },
+    where: { user: { id: userId }, status: Not(ReservationStatus.DRAFT) },
     relations: { items: { variant: true, material: true } },
     order: { createdAt: "DESC" },
   });
 
-export const allReservations = () =>
+export const allReservations = (statuses?: ReservationStatus[]) =>
   AppDataSource.getRepository(Reservation).find({
+    where: { status: statuses?.length ? In(statuses) : Not(ReservationStatus.DRAFT) },
     relations: { items: { variant: true, material: true }, user: true },
     order: { createdAt: "DESC" },
   });
