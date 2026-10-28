@@ -12,8 +12,11 @@ import type { Quote } from "@/lib/cart/types";
 import { useMounted } from "@/lib/cart/useMounted";
 import { formatPrice } from "@/lib/format";
 import { CREATE_RESERVATION, QUOTE_CART } from "@/lib/graphql/catalog";
+import { isProfileComplete, UPDATE_PROFILE, type ProfileUser } from "@/components/account/ProfileForms";
 
-type Props = { user: { firstName: string; lastName: string; email: string } };
+type Props = {
+  user: ProfileUser & { email: string };
+};
 
 const fields = [
   { name: "firstName", label: "Prénom", autoComplete: "given-name" },
@@ -27,6 +30,10 @@ const fields = [
 
 export function CheckoutForm({ user }: Props) {
   const mounted = useMounted();
+  // Coordonnées enregistrées et complètes : simple résumé, modifiable ; sinon le formulaire.
+  const complete = isProfileComplete(user);
+  const [editing, setEditing] = useState(!complete);
+  const [saveProfile] = useMutation(UPDATE_PROFILE);
   const { lines, period } = useCart();
   const [error, setError] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState(false);
@@ -59,6 +66,11 @@ export function CheckoutForm({ user }: Props) {
     const form = new FormData(event.currentTarget);
     const billing = Object.fromEntries(fields.map((f) => [f.name, String(form.get(f.name) ?? "")]));
     try {
+      // Coordonnées saisies ici : enregistrées dans le profil si le client l'a demandé.
+      if (editing && form.get("saveProfile") === "on") {
+        const { firstName, lastName, phone, address, postalCode, city } = billing;
+        await saveProfile({ variables: { data: { firstName, lastName, phone, address, postalCode, city } } });
+      }
       const { data } = await createReservation({
         variables: { data: { startDate: period!.startDate, endDate: period!.endDate, items, billing } },
       });
@@ -70,29 +82,61 @@ export function CheckoutForm({ user }: Props) {
     }
   }
 
-  const defaults: Record<string, string> = { firstName: user.firstName, lastName: user.lastName, email: user.email };
+  const defaults: Record<string, string> = {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    phone: user.phone ?? "",
+    address: user.address ?? "",
+    postalCode: user.postalCode ?? "",
+    city: user.city ?? "",
+  };
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <form onSubmit={onSubmit} className="flex flex-col gap-5 rounded-3xl border border-line bg-surface p-5 sm:p-6">
-        <h2 className="text-xl font-bold">Informations de facturation</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {fields.map((f) => (
-            <div key={f.name} className={`flex flex-col gap-2 ${"wide" in f ? "sm:col-span-2" : ""}`}>
-              <Label htmlFor={f.name}>{f.label}</Label>
-              <Input
-                id={f.name}
-                name={f.name}
-                type={"type" in f ? f.type : "text"}
-                autoComplete={f.autoComplete}
-                inputMode={"inputMode" in f ? f.inputMode : undefined}
-                pattern={"pattern" in f ? f.pattern : undefined}
-                defaultValue={defaults[f.name]}
-                required
-              />
-            </div>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-xl font-bold">Informations de facturation</h2>
+          {complete && !editing && (
+            <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
+              Modifier
+            </Button>
+          )}
         </div>
+
+        {editing ? (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {fields.map((f) => (
+                <div key={f.name} className={`flex flex-col gap-2 ${"wide" in f ? "sm:col-span-2" : ""}`}>
+                  <Label htmlFor={f.name}>{f.label}</Label>
+                  <Input
+                    id={f.name}
+                    name={f.name}
+                    type={"type" in f ? f.type : "text"}
+                    autoComplete={f.autoComplete}
+                    inputMode={"inputMode" in f ? f.inputMode : undefined}
+                    pattern={"pattern" in f ? f.pattern : undefined}
+                    defaultValue={defaults[f.name]}
+                    required
+                  />
+                </div>
+              ))}
+            </div>
+            <label className="flex items-center gap-3 text-sm">
+              <input type="checkbox" name="saveProfile" defaultChecked={!complete} className="h-4 w-4" />
+              Enregistrer ces coordonnées dans mon profil pour mes prochaines commandes
+            </label>
+          </>
+        ) : (
+          // Coordonnées du profil : résumé, envoyées avec la commande.
+          <div className="rounded-2xl bg-snow px-4 py-3 text-sm leading-relaxed">
+            {fields.map((f) => <input key={f.name} type="hidden" name={f.name} value={defaults[f.name]} />)}
+            <p className="font-semibold">{defaults.firstName} {defaults.lastName}</p>
+            <p className="text-muted">{defaults.email} · {defaults.phone}</p>
+            <p className="text-muted">{defaults.address}, {defaults.postalCode} {defaults.city}</p>
+          </div>
+        )}
         {error && (
           <p role="alert" className="rounded-xl border border-red-200 dark:border-red-400/30 bg-red-50 dark:bg-red-400/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
             {error}

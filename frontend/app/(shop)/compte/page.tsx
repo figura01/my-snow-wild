@@ -20,11 +20,16 @@ export default async function AccountPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Mon compte</h1>
-        <p className="text-muted">
-          {user.firstName} {user.lastName} · {user.email}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Mon compte</h1>
+          <p className="text-muted">
+            {user.firstName} {user.lastName} · {user.email}
+          </p>
+        </div>
+        <Link href="/compte/profil" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          Mon profil et mes coordonnées
+        </Link>
       </div>
 
       <section className="flex flex-col gap-4">

@@ -1,11 +1,12 @@
 import bcrypt from "bcryptjs";
 import { GraphQLError } from "graphql";
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { AppDataSource } from "../data-source";
 import { User, UserRole } from "../entities/User";
 import type { Context } from "../auth/context";
 import { AUTH_COOKIE, cookieOptions, signToken } from "../auth/token";
-import { LoginInput, RegisterInput } from "./auth.inputs";
+import { badInput } from "../utils/errors";
+import { LoginInput, PasswordInput, ProfileInput, RegisterInput } from "./auth.inputs";
 
 const users = () => AppDataSource.getRepository(User);
 
@@ -67,6 +68,36 @@ export class AuthResolver {
 
     startSession(ctx, user);
     return user;
+  }
+
+  // --- Profil du client connecté ---------------------------------------------------
+
+  @Authorized()
+  @Mutation(() => User, { description: "Met à jour le nom et les coordonnées de facturation du compte." })
+  async updateProfile(@Arg("data") data: ProfileInput, @Ctx() ctx: Context): Promise<User> {
+    const user = await users().findOneByOrFail({ id: ctx.user!.sub });
+    const clean = (value?: string | null) => value?.trim() || null;
+    Object.assign(user, {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      phone: clean(data.phone),
+      address: clean(data.address),
+      postalCode: clean(data.postalCode),
+      city: clean(data.city),
+    });
+    return users().save(user);
+  }
+
+  @Authorized()
+  @Mutation(() => Boolean)
+  async changePassword(@Arg("data") data: PasswordInput, @Ctx() ctx: Context): Promise<boolean> {
+    const user = await users().findOneByOrFail({ id: ctx.user!.sub });
+    if (!(await bcrypt.compare(data.currentPassword, user.passwordHash))) {
+      throw badInput("Mot de passe actuel incorrect.");
+    }
+    user.passwordHash = await bcrypt.hash(data.newPassword, 12);
+    await users().save(user);
+    return true;
   }
 
   @Mutation(() => Boolean)

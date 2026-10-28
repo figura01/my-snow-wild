@@ -42,6 +42,23 @@ export class User {
   @Column()
   lastName: string;
 
+  // --- Coordonnées de facturation enregistrées (facultatives), préremplies à la commande ---
+  @Field(() => String, { nullable: true })
+  @Column({ type: "varchar", length: 20, nullable: true })
+  phone: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Column({ type: "varchar", length: 200, nullable: true })
+  address: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Column({ type: "varchar", length: 10, nullable: true })
+  postalCode: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Column({ type: "varchar", length: 100, nullable: true })
+  city: string | null;
+
   @Field(() => UserRole)
   @Column({ type: "enum", enum: UserRole, default: UserRole.USER })
   role: UserRole;

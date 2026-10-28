@@ -7,6 +7,10 @@ export type SessionUser = {
   firstName: string;
   lastName: string;
   role: "ADMIN" | "USER";
+  phone: string | null;
+  address: string | null;
+  postalCode: string | null;
+  city: string | null;
 };
 
 // Utilisateur connecté vu par l'API (qui vérifie la signature du JWT),
@@ -14,7 +18,7 @@ export type SessionUser = {
 export async function getSessionUser(): Promise<SessionUser | null> {
   try {
     const data = await serverGraphql<{ me: SessionUser | null }>(
-      "{ me { id email firstName lastName role } }",
+      "{ me { id email firstName lastName role phone address postalCode city } }",
     );
     return data.me;
   } catch {
