@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@apollo/client/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ const fields = [
 
 export function CheckoutForm({ user }: Props) {
   const mounted = useMounted();
+  const router = useRouter();
   // Coordonnées enregistrées et complètes : simple résumé, modifiable ; sinon le formulaire.
   const complete = isProfileComplete(user);
   const [editing, setEditing] = useState(!complete);
@@ -46,7 +48,7 @@ export function CheckoutForm({ user }: Props) {
     variables: ready ? { cart: { ...period, items } } : undefined,
   });
   const [createReservation, { loading }] = useMutation<{
-    createReservation: { reservationId: string; paymentUrl: string };
+    createReservation: { reservationId: string; mode: "stripe" | "simulated"; paymentUrl: string | null };
   }>(CREATE_RESERVATION);
   const quote = data?.quoteCart;
 
@@ -75,8 +77,10 @@ export function CheckoutForm({ user }: Props) {
         variables: { data: { startDate: period!.startDate, endDate: period!.endDate, items, billing } },
       });
       setRedirecting(true);
-      // Page de paiement : Stripe (externe) ou paiement simulé en développement.
-      window.location.href = data!.createReservation.paymentUrl;
+      const result = data!.createReservation;
+      // Paiement intégré au site (Stripe), ou page de paiement simulé sans clés Stripe.
+      if (result.mode === "stripe") router.push(`/commande/paiement?id=${result.reservationId}`);
+      else window.location.href = result.paymentUrl!;
     } catch (e) {
       setError(e instanceof Error ? e.message : "La commande n'a pas pu être créée.");
     }
@@ -143,7 +147,7 @@ export function CheckoutForm({ user }: Props) {
           </p>
         )}
         <Button type="submit" variant="accent" size="lg" disabled={!quote?.valid || loading || redirecting}>
-          {redirecting ? "Redirection vers le paiement…" : loading ? "Réservation…" : "Réserver et payer"}
+          {redirecting ? "Ouverture du paiement…" : loading ? "Réservation…" : "Continuer vers le paiement"}
         </Button>
         <p className="text-xs text-muted">
           Le matériel est bloqué pour vous pendant 30 minutes, le temps de régler votre commande.

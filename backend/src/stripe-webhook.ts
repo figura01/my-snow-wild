@@ -2,7 +2,7 @@ import express, { type Router } from "express";
 import type Stripe from "stripe";
 import { env } from "./config/env";
 import { stripeClient } from "./services/payment";
-import { markCancelled, markPaid } from "./services/reservations";
+import { markCancelled, markPaid, settleSucceededPayment } from "./services/reservations";
 
 /**
  * Notifications envoyées par Stripe. La signature est vérifiée avec
@@ -30,12 +30,25 @@ export function stripeWebhookRouter(): Router {
       return;
     }
 
-    const session = event.data.object as Stripe.Checkout.Session;
-    const reservationId = session.metadata?.reservationId;
-    if (reservationId) {
-      if (event.type === "checkout.session.completed" && session.payment_status === "paid") {
+    // Paiement intégré au site : le webhook est la source de vérité du paiement.
+    if (event.type === "payment_intent.succeeded") {
+      const intent = event.data.object as Stripe.PaymentIntent;
+      const reservationId = intent.metadata?.reservationId;
+      if (reservationId) {
+        const outcome = await settleSucceededPayment(reservationId, intent);
+        if (outcome === "refunded") console.warn("[paiement] paiement tardif remboursé", reservationId);
+      }
+    } else if (event.type === "payment_intent.payment_failed") {
+      // Carte refusée : le client peut réessayer tant que le délai court ; rien à changer.
+      const intent = event.data.object as Stripe.PaymentIntent;
+      console.info("[paiement] échec", intent.metadata?.reservationId, intent.last_payment_error?.code);
+    } else if (event.type === "checkout.session.completed" || event.type === "checkout.session.expired") {
+      // Ancien parcours (page Stripe Checkout).
+      const session = event.data.object as Stripe.Checkout.Session;
+      const reservationId = session.metadata?.reservationId;
+      if (reservationId && event.type === "checkout.session.completed" && session.payment_status === "paid") {
         await markPaid(reservationId);
-      } else if (event.type === "checkout.session.expired") {
+      } else if (reservationId && event.type === "checkout.session.expired") {
         await markCancelled(reservationId);
       }
     }

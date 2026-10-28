@@ -32,6 +32,8 @@ export const env = {
   // Stripe est facultatif : sans clé, l'application utilise un paiement simulé.
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY || null,
+    // Clé publiable (pk_…), transmise au navigateur pour afficher le formulaire de carte.
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || null,
   },
   admin: {

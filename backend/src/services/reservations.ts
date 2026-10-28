@@ -5,6 +5,7 @@ import { PAYMENT_DELAY_MINUTES, Reservation, ReservationStatus } from "../entiti
 import { ReservationItem } from "../entities/ReservationItem";
 import { badInput } from "../utils/errors";
 import { deleteDraft } from "./cart";
+import { cancelPaymentIntent, refundPaymentIntent } from "./payment";
 import { buildQuote, type QuoteRequestItem } from "./quote";
 
 export type Billing = {
@@ -119,8 +120,12 @@ export async function expireStaleReservations(): Promise<number> {
     .update()
     .set({ status: ReservationStatus.EXPIRED })
     .where("status = :pending AND expiresAt <= now()", { pending: ReservationStatus.PENDING })
+    .returning(["id", "stripePaymentIntentId"])
     .execute();
-  return result.affected ?? 0;
+  // Le paiement Stripe de ces réservations ne doit plus pouvoir aboutir.
+  const expired = (result.raw ?? []) as { stripePaymentIntentId: string | null }[];
+  await Promise.all(expired.filter((r) => r.stripePaymentIntentId).map((r) => cancelPaymentIntent(r.stripePaymentIntentId!)));
+  return result.affected ?? expired.length;
 }
 
 // Les paniers (DRAFT) ne sont pas des réservations : exclus des listes.
@@ -138,3 +143,58 @@ export const allReservations = (statuses?: ReservationStatus[]) =>
     order: { createdAt: "DESC" },
   });
 
+
+/**
+ * Paiement confirmé par Stripe (webhook ou retour du navigateur). Idempotent.
+ * - réservation en attente : elle passe en PAID ;
+ * - réservation déjà expirée ou annulée (paiement arrivé au dernier moment) : si le matériel
+ *   est toujours libre, elle est validée quand même ; sinon le client est remboursé.
+ * Le montant payé doit correspondre exactement au total de la réservation.
+ */
+export async function settleSucceededPayment(
+  reservationId: string,
+  intent: { id: string; amount: number; currency: string },
+): Promise<"paid" | "already" | "refunded" | "ignored"> {
+  const repo = AppDataSource.getRepository(Reservation);
+  const reservation = await repo.findOne({ where: { id: reservationId }, relations: { items: { variant: true } } });
+  if (!reservation || reservation.stripePaymentIntentId !== intent.id) return "ignored";
+  if (reservation.status === ReservationStatus.PAID) return "already";
+  if (intent.amount !== reservation.totalCents || intent.currency !== "eur") {
+    console.error("[paiement] montant inattendu", reservationId, intent.amount, reservation.totalCents);
+    return "ignored";
+  }
+
+  if (reservation.status === ReservationStatus.PENDING) {
+    await markPaid(reservationId);
+    return "paid";
+  }
+
+  // Paiement tardif : on revérifie la disponibilité, avec verrou comme pour une commande.
+  const stillAvailable = await AppDataSource.transaction(async (manager) => {
+    const variantIds = reservation.items.map((i) => i.variant.id);
+    await manager
+      .getRepository(MaterialVariant)
+      .createQueryBuilder("variant")
+      .setLock("pessimistic_write")
+      .where("variant.id IN (:...variantIds)", { variantIds })
+      .getMany();
+    const quote = await buildQuote(
+      reservation.startDate,
+      reservation.endDate,
+      reservation.items.map((i) => ({ variantId: i.variant.id, quantity: i.quantity })),
+      manager,
+    ).catch(() => null); // période passée entre-temps : plus réservable
+    if (!quote?.valid) return false;
+    await manager.getRepository(Reservation).update(reservationId, {
+      status: ReservationStatus.PAID,
+      paidAt: new Date(),
+      expiresAt: null,
+    });
+    return true;
+  });
+  if (stillAvailable) return "paid";
+
+  await refundPaymentIntent(intent.id);
+  await repo.update(reservationId, { status: ReservationStatus.CANCELLED, expiresAt: null });
+  return "refunded";
+}

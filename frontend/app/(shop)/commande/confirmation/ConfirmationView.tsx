@@ -24,16 +24,21 @@ export function ConfirmationView({ reservationId, sessionId }: { reservationId: 
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    confirm({ variables: { id: reservationId, sessionId } })
-      .then(({ data }) => {
-        if (data?.confirmPayment.status === "PAID") {
-          clear();
-          setState({ status: "paid", total: data.confirmPayment.totalCents });
-        } else {
-          setState({ status: "error", message: "Le paiement n'est pas encore confirmé." });
-        }
-      })
-      .catch((e: Error) => setState({ status: "error", message: e.message }));
+    // Certains paiements sont confirmés par Stripe quelques secondes plus tard : on réessaie un peu.
+    const attempt = (remaining: number) =>
+      confirm({ variables: { id: reservationId, sessionId } })
+        .then(({ data }) => {
+          if (data?.confirmPayment.status === "PAID") {
+            clear();
+            setState({ status: "paid", total: data.confirmPayment.totalCents });
+          } else if (remaining > 0) {
+            setTimeout(() => attempt(remaining - 1), 2000);
+          } else {
+            setState({ status: "error", message: "Le paiement n'est pas encore confirmé : actualisez la page dans un instant." });
+          }
+        })
+        .catch((e: Error) => setState({ status: "error", message: e.message }));
+    attempt(5);
   }, [confirm, reservationId, sessionId, clear]);
 
   if (state.status === "loading") return <p className="text-muted">Confirmation du paiement…</p>;

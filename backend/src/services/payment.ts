@@ -1,54 +1,58 @@
 import Stripe from "stripe";
 import { env } from "../config/env";
 import type { Reservation } from "../entities/Reservation";
-import { countDays } from "../utils/dates";
 
-// Sans clé Stripe, l'application passe en paiement simulé (développement).
-const stripe = env.stripe.secretKey ? new Stripe(env.stripe.secretKey) : null;
+// Sans clés Stripe, l'application passe en paiement simulé (développement).
+const stripe = env.stripe.secretKey && env.stripe.publishableKey ? new Stripe(env.stripe.secretKey) : null;
 
 export const paymentMode: "stripe" | "simulated" = stripe ? "stripe" : "simulated";
 export const stripeClient = stripe;
 
 /**
- * Crée la page de paiement de la réservation et renvoie son URL.
- * Les montants envoyés à Stripe sont ceux de la réservation en base.
+ * Prépare le paiement intégré au site : un PaymentIntent Stripe du montant de la réservation
+ * (calculé en base, jamais envoyé par le navigateur). Le navigateur reçoit seulement son
+ * « client secret », qui permet d'afficher le formulaire de carte et de confirmer CE paiement.
  */
-export async function createPaymentSession(
-  reservation: Reservation,
-): Promise<{ url: string; sessionId: string | null }> {
-  if (!stripe) {
-    return { url: `${env.frontendUrl}/commande/paiement-simule?id=${reservation.id}`, sessionId: null };
-  }
-
-  const days = countDays(reservation.startDate, reservation.endDate);
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    customer_email: reservation.billingEmail,
-    client_reference_id: reservation.id,
-    metadata: { reservationId: reservation.id },
-    line_items: reservation.items.map((item) => ({
-      quantity: item.quantity,
-      price_data: {
-        currency: "eur",
-        unit_amount: item.dailyPriceCents * days,
-        product_data: {
-          name: `${item.material.name} — taille ${item.variant.size}`,
-          description: `Location de ${days} jour${days > 1 ? "s" : ""}, du ${reservation.startDate} au ${reservation.endDate}`,
-        },
-      },
-    })),
-    success_url: `${env.frontendUrl}/commande/confirmation?id=${reservation.id}&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${env.frontendUrl}/panier`,
-    // La session Stripe expire (31 min, le minimum autorisé) avant la réservation
-    // (35 min) : un paiement ne peut donc jamais aboutir sur du matériel libéré.
-    expires_at: Math.floor(Date.now() / 1000) + 31 * 60,
-  });
-
-  if (!session.url) throw new Error("Stripe n'a pas renvoyé d'URL de paiement.");
-  return { url: session.url, sessionId: session.id };
+export async function createPaymentIntent(reservation: Reservation): Promise<{ id: string; clientSecret: string }> {
+  if (!stripe) throw new Error("Paiement Stripe non configuré.");
+  const intent = await stripe.paymentIntents.create(
+    {
+      amount: reservation.totalCents,
+      currency: "eur",
+      automatic_payment_methods: { enabled: true },
+      receipt_email: reservation.billingEmail || undefined,
+      description: `Réservation Snow Wild du ${reservation.startDate} au ${reservation.endDate}`,
+      metadata: { reservationId: reservation.id },
+    },
+    // Rejouer la même demande (double clic, nouvel essai réseau) ne crée pas un second paiement.
+    { idempotencyKey: `reservation-${reservation.id}` },
+  );
+  if (!intent.client_secret) throw new Error("Stripe n'a pas renvoyé de client secret.");
+  return { id: intent.id, clientSecret: intent.client_secret };
 }
 
-/** Vérifie auprès de Stripe qu'une session est payée et correspond à la réservation. */
+export async function retrievePaymentIntent(id: string): Promise<Stripe.PaymentIntent | null> {
+  return stripe ? stripe.paymentIntents.retrieve(id) : null;
+}
+
+/** Annule un paiement pas encore réalisé (réservation expirée) ; sans effet s'il est déjà terminé. */
+export async function cancelPaymentIntent(id: string): Promise<void> {
+  if (!stripe) return;
+  try {
+    await stripe.paymentIntents.cancel(id);
+  } catch (error) {
+    // Déjà payé ou déjà annulé : le webhook traitera le cas d'un paiement arrivé au dernier moment.
+    console.warn("[paiement] annulation impossible", id, (error as Error).message);
+  }
+}
+
+/** Rembourse intégralement un paiement (paiement arrivé trop tard sur du matériel plus disponible). */
+export async function refundPaymentIntent(id: string): Promise<void> {
+  if (!stripe) return;
+  await stripe.refunds.create({ payment_intent: id }, { idempotencyKey: `refund-${id}` });
+}
+
+/** Vérifie auprès de Stripe qu'une ancienne session Checkout est payée (parcours précédent). */
 export async function isStripeSessionPaid(sessionId: string, reservationId: string): Promise<boolean> {
   if (!stripe) return false;
   const session = await stripe.checkout.sessions.retrieve(sessionId);

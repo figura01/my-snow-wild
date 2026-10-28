@@ -123,7 +123,7 @@ export const QUOTE_CART = gql`
 
 export const CREATE_RESERVATION = gql`
   mutation CreateReservation($data: CheckoutInput!) {
-    createReservation(data: $data) { reservationId paymentUrl }
+    createReservation(data: $data) { reservationId mode paymentUrl }
   }
 `;
 

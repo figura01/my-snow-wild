@@ -14,6 +14,7 @@ import {
   Field,
   FieldResolver,
   ID,
+  Int,
   InputType,
   Mutation,
   ObjectType,
@@ -25,7 +26,8 @@ import type { Context } from "../auth/context";
 import { AppDataSource } from "../data-source";
 import { Reservation, ReservationStatus } from "../entities/Reservation";
 import { UserRole } from "../entities/User";
-import { createPaymentSession, isStripeSessionPaid, paymentMode } from "../services/payment";
+import { env } from "../config/env";
+import { createPaymentIntent, isStripeSessionPaid, paymentMode, retrievePaymentIntent } from "../services/payment";
 import { MAX_LINES } from "../services/quote";
 import {
   allReservations,
@@ -34,6 +36,7 @@ import {
   isExpired,
   markCancelled,
   markPaid,
+  settleSucceededPayment,
   userReservations,
 } from "../services/reservations";
 import { badInput, notFound } from "../utils/errors";
@@ -71,7 +74,26 @@ class CheckoutInput {
 @ObjectType()
 class CheckoutResult {
   @Field(() => ID) reservationId: string;
-  @Field({ description: "Page de paiement (Stripe ou simulée) vers laquelle rediriger." }) paymentUrl: string;
+  @Field({ description: "« stripe » : formulaire de carte intégré ; « simulated » : page de paiement simulé." })
+  mode: string;
+  @Field(() => String, { nullable: true, description: "Paiement simulé : page vers laquelle rediriger." })
+  paymentUrl: string | null;
+}
+
+@ObjectType()
+class PaymentDetails {
+  @Field(() => ID) reservationId: string;
+  @Field(() => Int) amountCents: number;
+  @Field(() => Date, { nullable: true, description: "Fin du délai de paiement." }) expiresAt: Date | null;
+  @Field({ description: "Secret du paiement Stripe, pour le formulaire de carte de CETTE réservation." })
+  clientSecret: string;
+}
+
+@ObjectType()
+class PaymentConfig {
+  @Field() mode: string;
+  @Field(() => String, { nullable: true, description: "Clé publiable Stripe (pk_…), publique par nature." })
+  publishableKey: string | null;
 }
 
 function canSee(ctx: Context, reservation: Reservation) {
@@ -90,6 +112,11 @@ export class ReservationResolver {
     return paymentMode;
   }
 
+  @Query(() => PaymentConfig, { description: "Configuration du paiement côté navigateur." })
+  paymentConfig(): PaymentConfig {
+    return { mode: paymentMode, publishableKey: paymentMode === "stripe" ? env.stripe.publishableKey : null };
+  }
+
   // --- Client connecté --------------------------------------------------------
 
   @Authorized()
@@ -103,12 +130,17 @@ export class ReservationResolver {
       data.billing,
     );
 
+    if (paymentMode === "simulated") {
+      return {
+        reservationId: reservation.id,
+        mode: paymentMode,
+        paymentUrl: `${env.frontendUrl}/commande/paiement-simule?id=${reservation.id}`,
+      };
+    }
     try {
-      const { url, sessionId } = await createPaymentSession(reservation);
-      if (sessionId) {
-        await AppDataSource.getRepository(Reservation).update(reservation.id, { stripeSessionId: sessionId });
-      }
-      return { reservationId: reservation.id, paymentUrl: url };
+      const intent = await createPaymentIntent(reservation);
+      await AppDataSource.getRepository(Reservation).update(reservation.id, { stripePaymentIntentId: intent.id });
+      return { reservationId: reservation.id, mode: paymentMode, paymentUrl: null };
     } catch (error) {
       // Si le paiement ne peut pas être préparé, on libère immédiatement le matériel.
       await markCancelled(reservation.id);
@@ -118,8 +150,24 @@ export class ReservationResolver {
   }
 
   @Authorized()
+  @Query(() => PaymentDetails, {
+    description: "Paiement d'une réservation en attente (formulaire de carte) ; aussi après un rechargement de la page.",
+  })
+  async reservationPayment(@Arg("id", () => ID) id: string, @Ctx() ctx: Context): Promise<PaymentDetails> {
+    const reservation = await findReservation(id);
+    if (reservation.user?.id !== ctx.user!.sub) throw notFound("Réservation");
+    if (reservation.status === ReservationStatus.PAID) throw badInput("Cette réservation est déjà payée.");
+    if (reservation.status !== ReservationStatus.PENDING || isExpired(reservation)) {
+      throw badInput("Le délai de paiement est dépassé : refais ta réservation.");
+    }
+    const intent = reservation.stripePaymentIntentId ? await retrievePaymentIntent(reservation.stripePaymentIntentId) : null;
+    if (!intent?.client_secret) throw badInput("Paiement indisponible pour cette réservation.");
+    return { reservationId: id, amountCents: reservation.totalCents, expiresAt: reservation.expiresAt, clientSecret: intent.client_secret };
+  }
+
+  @Authorized()
   @Mutation(() => Reservation, {
-    description: "Confirme le paiement au retour de la page de paiement (idempotent).",
+    description: "Vérifie le paiement au retour du formulaire (idempotent). Stripe fait foi, jamais le navigateur.",
   })
   async confirmPayment(
     @Arg("id", () => ID) id: string,
@@ -128,14 +176,35 @@ export class ReservationResolver {
   ): Promise<Reservation> {
     const reservation = await findReservation(id);
     if (!canSee(ctx, reservation)) throw notFound("Réservation");
-    if (reservation.status !== ReservationStatus.PENDING) return reservation;
-    if (isExpired(reservation)) throw badInput("Le délai de paiement est dépassé : refais ta réservation.");
+    if (reservation.status === ReservationStatus.PAID) return reservation;
 
-    if (paymentMode === "stripe") {
-      // On ne croit jamais le navigateur sur parole : Stripe confirme le paiement.
-      if (!sessionId || !(await isStripeSessionPaid(sessionId, reservation.id))) {
-        throw badInput("Paiement non confirmé par Stripe.");
+    if (paymentMode === "simulated") {
+      if (reservation.status !== ReservationStatus.PENDING || isExpired(reservation)) {
+        throw badInput("Le délai de paiement est dépassé : refais ta réservation.");
       }
+      await markPaid(reservation.id);
+      return findReservation(id);
+    }
+
+    if (reservation.stripePaymentIntentId) {
+      const intent = await retrievePaymentIntent(reservation.stripePaymentIntentId);
+      if (intent?.status === "succeeded") {
+        const outcome = await settleSucceededPayment(id, intent);
+        if (outcome === "refunded") {
+          throw badInput("Le délai de paiement était dépassé et le matériel n'est plus disponible : vous avez été remboursé.");
+        }
+        return findReservation(id);
+      }
+      if (intent?.status === "processing") return reservation; // confirmation à venir par le webhook
+      throw badInput("Paiement non confirmé par Stripe.");
+    }
+
+    // Ancien parcours : page Stripe Checkout.
+    if (reservation.status !== ReservationStatus.PENDING || isExpired(reservation)) {
+      throw badInput("Le délai de paiement est dépassé : refais ta réservation.");
+    }
+    if (!sessionId || !(await isStripeSessionPaid(sessionId, reservation.id))) {
+      throw badInput("Paiement non confirmé par Stripe.");
     }
     await markPaid(reservation.id);
     return findReservation(id);

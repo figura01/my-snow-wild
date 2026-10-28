@@ -77,8 +77,13 @@ export class Reservation {
   @Column({ type: "timestamptz", nullable: true })
   paidAt: Date | null;
 
+  // Ancien parcours (page Stripe Checkout), conservé pour l'historique.
   @Column({ type: "varchar", nullable: true })
   stripeSessionId: string | null;
+
+  // Paiement intégré au site : PaymentIntent Stripe de la réservation.
+  @Column({ type: "varchar", nullable: true })
+  stripePaymentIntentId: string | null;
 
   @Field(() => Int, { description: "Montant total en centimes." })
   @Column({ type: "int", default: 0 })
