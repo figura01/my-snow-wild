@@ -17,3 +17,5 @@ delete process.env.STRIPE_PUBLISHABLE_KEY;
 // Jamais d'envoi sur le vrai compte Cloudinary pendant les tests : stockage local.
 delete process.env.CLOUDINARY_URL;
 delete process.env.ADMIN_EMAIL;
+// Aucun e-mail réel pendant les tests : ils restent en mémoire (outbox).
+delete process.env.RESEND_API_KEY;

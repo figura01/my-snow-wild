@@ -7,8 +7,9 @@ import { User, UserRole } from "../entities/User";
 import type { Context } from "../auth/context";
 import { AUTH_COOKIE, cookieOptions, signToken } from "../auth/token";
 import { createAccount, customerOf } from "../services/accounts";
+import { requestPasswordReset, resetPassword } from "../services/password-reset";
 import { badInput } from "../utils/errors";
-import { LoginInput, PasswordInput, ProfileInput, RegisterInput } from "./auth.inputs";
+import { LoginInput, PasswordInput, ProfileInput, RegisterInput, ResetPasswordInput } from "./auth.inputs";
 
 const users = () => AppDataSource.getRepository(User);
 
@@ -129,8 +130,31 @@ export class AuthResolver {
       throw badInput("Mot de passe actuel incorrect.");
     }
     user.passwordHash = await bcrypt.hash(data.newPassword, 12);
+    // Un lien « mot de passe oublié » encore en cours ne doit plus servir.
+    user.passwordResetTokenHash = null;
+    user.passwordResetExpiresAt = null;
     await users().save(user);
     return true;
+  }
+
+  // --- Mot de passe oublié ---------------------------------------------------------
+
+  @Mutation(() => Boolean, {
+    description: "Envoie un lien de réinitialisation si le compte existe. Répond toujours true (ne révèle pas les comptes).",
+  })
+  async requestPasswordReset(@Arg("email") email: string): Promise<boolean> {
+    // Traitement en arrière-plan : le temps de réponse ne dépend pas de l'existence du compte.
+    if (email.length <= 254) {
+      void requestPasswordReset(email).catch((error) => console.error("[mot de passe oublié]", error));
+    }
+    return true;
+  }
+
+  @Mutation(() => User, { description: "Choisit un nouveau mot de passe avec le lien reçu par e-mail, puis connecte le client." })
+  async resetPassword(@Arg("data") data: ResetPasswordInput, @Ctx() ctx: Context): Promise<User> {
+    const user = await resetPassword(data.token, data.newPassword);
+    startSession(ctx, user);
+    return user;
   }
 
   @Mutation(() => Boolean)

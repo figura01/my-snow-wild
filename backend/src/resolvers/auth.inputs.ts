@@ -82,3 +82,16 @@ export class PasswordInput {
   @MaxLength(128)
   newPassword: string;
 }
+
+@InputType()
+export class ResetPasswordInput {
+  @Field({ description: "Jeton reçu par e-mail." })
+  @MinLength(1)
+  @MaxLength(100)
+  token: string;
+
+  @Field()
+  @MinLength(8, { message: "Le nouveau mot de passe doit contenir au moins 8 caractères." })
+  @MaxLength(128)
+  newPassword: string;
+}

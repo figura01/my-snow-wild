@@ -6,6 +6,7 @@ import { ReservationItem } from "../entities/ReservationItem";
 import { badInput } from "../utils/errors";
 import { deleteDraft } from "./cart";
 import { issueInvoiceSafely } from "./invoices";
+import { sendReservationConfirmationSafely } from "./notifications";
 import { cancelPaymentIntent, refundPaymentIntent } from "./payment";
 import { buildQuote, type QuoteRequestItem } from "./quote";
 
@@ -91,13 +92,16 @@ export async function findReservation(id: string): Promise<Reservation> {
   return reservation;
 }
 
-/** Passe une réservation en « payée » et émet sa facture. Idempotent : sans effet si déjà payée. */
+/** Passe une réservation en « payée », émet sa facture et envoie la confirmation. Idempotent : sans effet si déjà payée. */
 export async function markPaid(id: string): Promise<void> {
   const result = await AppDataSource.getRepository(Reservation).update(
     { id, status: ReservationStatus.PENDING },
     { status: ReservationStatus.PAID, paidAt: new Date(), expiresAt: null },
   );
-  if (result.affected) await issueInvoiceSafely(id);
+  if (result.affected) {
+    await issueInvoiceSafely(id);
+    await sendReservationConfirmationSafely(id);
+  }
 }
 
 export async function markCancelled(id: string): Promise<void> {
@@ -196,6 +200,7 @@ export async function settleSucceededPayment(
   });
   if (stillAvailable) {
     await issueInvoiceSafely(reservationId);
+    await sendReservationConfirmationSafely(reservationId);
     return "paid";
   }
 

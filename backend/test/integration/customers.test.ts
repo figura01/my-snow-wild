@@ -39,9 +39,11 @@ describe("compte et fiche client", () => {
     const columns: { column_name: string }[] = await AppDataSource.query(
       `SELECT column_name FROM information_schema.columns WHERE table_name = 'user'`,
     );
-    expect(columns.map((c) => c.column_name).sort()).toEqual(
-      ["createdAt", "customerId", "email", "id", "passwordHash", "role", "updatedAt"].sort(),
-    );
+    const names = columns.map((c) => c.column_name);
+    expect(names).toEqual(expect.arrayContaining(["email", "passwordHash", "role", "customerId"]));
+    for (const personal of ["firstName", "lastName", "phone", "address", "postalCode", "city"]) {
+      expect(names).not.toContain(personal);
+    }
   });
 
   it("supprimer un compte supprime sa fiche", async () => {

@@ -36,6 +36,12 @@ export const env = {
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || null,
   },
+  // E-mails : envoyés par Resend si la clé est définie ; sinon affichés dans les logs (développement).
+  mail: {
+    resendApiKey: process.env.RESEND_API_KEY || null,
+    from: process.env.MAIL_FROM || "Snow Wild <no-reply@snowwild.dev>",
+    replyTo: process.env.MAIL_REPLY_TO || null,
+  },
   // Émetteur des factures. Valeurs par défaut fictives : Snow Wild est un projet de démonstration.
   company: {
     name: process.env.COMPANY_NAME ?? "Snow Wild SAS",

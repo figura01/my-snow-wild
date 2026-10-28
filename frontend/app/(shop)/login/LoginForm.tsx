@@ -2,6 +2,7 @@
 
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,12 @@ export function LoginForm({ next }: { next: string }) {
         <Input id="email" name="email" type="email" autoComplete="email" required />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Mot de passe</Label>
+        <div className="flex items-baseline justify-between gap-2">
+          <Label htmlFor="password">Mot de passe</Label>
+          <Link href="/mot-de-passe-oublie" className="text-sm text-glacier hover:underline">
+            Mot de passe oublié ?
+          </Link>
+        </div>
         <Input id="password" name="password" type="password" autoComplete="current-password" required />
       </div>
       {error && (

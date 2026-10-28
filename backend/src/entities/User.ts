@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -36,6 +37,15 @@ export class User {
 
   @Column()
   passwordHash: string;
+
+  // Mot de passe oublié : empreinte SHA-256 du jeton envoyé par e-mail (jamais le jeton lui-même),
+  // et fin de validité. Effacés dès que le jeton sert ou qu'un nouveau mot de passe est choisi.
+  @Index()
+  @Column({ type: "varchar", length: 64, nullable: true })
+  passwordResetTokenHash: string | null;
+
+  @Column({ type: "timestamptz", nullable: true })
+  passwordResetExpiresAt: Date | null;
 
   // Identité et coordonnées : dans la fiche client (voir Customer). Les champs
   // firstName, lastName, phone… restent exposés sur User par l'API (UserResolver).
