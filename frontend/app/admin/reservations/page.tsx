@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { t } from "@/components/admin/table";
+import { InvoiceLink } from "@/components/InvoiceLink";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDay } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
@@ -96,7 +97,12 @@ export default async function AdminReservationsPage({
                   </span>
                 </td>
                 <td data-label="Total" className={`${t.td} font-semibold`}>{r.status === "DRAFT" ? "—" : formatPrice(r.totalCents)}</td>
-                <td data-label="Statut" className={t.td}><StatusBadge reservation={r} /></td>
+                <td data-label="Statut" className={t.td}>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <StatusBadge reservation={r} />
+                    {r.status === "PAID" && <InvoiceLink reservationId={r.id} number={r.invoice?.number} className="text-xs" />}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

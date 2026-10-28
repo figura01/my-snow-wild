@@ -2,6 +2,7 @@ export const RESERVATION_FIELDS = `
   id startDate endDate status isExpired totalCents createdAt updatedAt paidAt
   billingFirstName billingLastName billingEmail billingPhone billingAddress billingPostalCode billingCity
   user { email }
+  invoice { number }
   items { id quantity dailyPriceCents variant { size } material { name slug } }
 `;
 
@@ -25,6 +26,7 @@ export type Reservation = {
   billingPostalCode: string;
   billingCity: string;
   user: { email: string } | null;
+  invoice: { number: string } | null;
   items: { id: string; quantity: number; dailyPriceCents: number; variant: { size: string }; material: { name: string; slug: string } }[];
 };
 

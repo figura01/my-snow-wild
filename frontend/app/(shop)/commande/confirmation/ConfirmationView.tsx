@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client/react";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { invoiceUrl } from "@/components/InvoiceLink";
 import { buttonVariants } from "@/components/ui/button";
 import { useCart } from "@/lib/cart/store";
 import { formatPrice } from "@/lib/format";
@@ -60,7 +61,12 @@ export function ConfirmationView({ reservationId, sessionId }: { reservationId: 
       <p className="text-muted">
         Merci ! Votre paiement de {formatPrice(state.total ?? 0)} est bien enregistré. Votre matériel vous attend.
       </p>
-      <Link href="/compte" className={buttonVariants({ variant: "accent" })}>Voir mes réservations</Link>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Link href="/compte" className={buttonVariants({ variant: "accent" })}>Voir mes réservations</Link>
+        <a href={invoiceUrl(reservationId, true)} className={buttonVariants({ variant: "outline" })}>
+          Télécharger la facture
+        </a>
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { env } from "./config/env";
 import { AppDataSource } from "./data-source";
 import { stripeWebhookRouter } from "./stripe-webhook";
 import { uploadsRouter } from "./uploads";
+import { invoicesRouter } from "./invoices";
 import { paymentMode } from "./services/payment";
 import { buildAppSchema } from "./schema";
 import { ensureAdmin } from "./seed-admin";
@@ -42,6 +43,8 @@ async function main() {
   app.use(stripeWebhookRouter());
   // Photos : envoi (corps brut) et fichiers envoyés.
   app.use(uploadsRouter());
+  // Factures PDF des réservations payées.
+  app.use(invoicesRouter());
 
   app.use(
     "/graphql",

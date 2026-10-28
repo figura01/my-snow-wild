@@ -1,3 +1,4 @@
+import { InvoiceLink } from "@/components/InvoiceLink";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDay } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
@@ -19,7 +20,10 @@ export function ReservationSummary({ reservation }: { reservation: Reservation }
           </li>
         ))}
       </ul>
-      <p className="border-t border-line pt-3 text-lg font-extrabold">Total : {formatPrice(reservation.totalCents)}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
+        <p className="text-lg font-extrabold">Total : {formatPrice(reservation.totalCents)}</p>
+        {reservation.status === "PAID" && <InvoiceLink reservationId={reservation.id} number={reservation.invoice?.number} />}
+      </div>
     </div>
   );
 }

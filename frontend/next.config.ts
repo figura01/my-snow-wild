@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       // Photos des matériels : envoi depuis le back-office et fichiers.
       { source: "/api/materials/:id/images", destination: `${backendUrl}/api/materials/:id/images` },
       { source: "/uploads/:file", destination: `${backendUrl}/uploads/:file` },
+      // Factures PDF (le cookie de session est transmis tel quel).
+      { source: "/api/reservations/:id/invoice", destination: `${backendUrl}/api/reservations/:id/invoice` },
     ];
   },
 };

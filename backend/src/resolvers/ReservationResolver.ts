@@ -24,10 +24,12 @@ import {
 } from "type-graphql";
 import type { Context } from "../auth/context";
 import { AppDataSource } from "../data-source";
+import { Invoice } from "../entities/Invoice";
 import { Reservation, ReservationStatus } from "../entities/Reservation";
 import { UserRole } from "../entities/User";
 import { env } from "../config/env";
 import { createPaymentIntent, isStripeSessionPaid, paymentMode, retrievePaymentIntent } from "../services/payment";
+import { findInvoiceOf } from "../services/invoices";
 import { MAX_LINES } from "../services/quote";
 import {
   allReservations,
@@ -105,6 +107,15 @@ export class ReservationResolver {
   @FieldResolver(() => Boolean, { description: "Non payée dans le délai : le matériel a été libéré." })
   isExpired(@Root() reservation: Reservation): boolean {
     return isExpired(reservation);
+  }
+
+  @FieldResolver(() => Invoice, {
+    nullable: true,
+    description: "Facture émise au paiement ; PDF : GET /api/reservations/:id/invoice.",
+  })
+  invoice(@Root() reservation: Reservation): Promise<Invoice | null> {
+    if (reservation.status !== ReservationStatus.PAID) return Promise.resolve(null);
+    return findInvoiceOf(reservation.id);
   }
 
   @Query(() => String, { description: "« stripe » ou « simulated »." })

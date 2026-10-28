@@ -36,6 +36,20 @@ export const env = {
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || null,
   },
+  // Émetteur des factures. Valeurs par défaut fictives : Snow Wild est un projet de démonstration.
+  company: {
+    name: process.env.COMPANY_NAME ?? "Snow Wild SAS",
+    address: process.env.COMPANY_ADDRESS ?? "12 place des Glaciers",
+    postalCode: process.env.COMPANY_POSTAL_CODE ?? "73320",
+    city: process.env.COMPANY_CITY ?? "Tignes",
+    email: process.env.COMPANY_EMAIL ?? "contact@snowwild.dev",
+    siret: process.env.COMPANY_SIRET ?? "000 000 000 00000",
+    vatNumber: process.env.COMPANY_VAT_NUMBER ?? "FR00000000000",
+    legalForm: process.env.COMPANY_LEGAL_FORM ?? "SAS au capital de 10 000 €",
+    rcs: process.env.COMPANY_RCS ?? "RCS Chambéry (fictif)",
+    // Tant que ce n'est pas une vraie entreprise, chaque facture porte la mention « document fictif ».
+    demo: process.env.COMPANY_DEMO !== "false",
+  },
   admin: {
     email: process.env.ADMIN_EMAIL,
     password: process.env.ADMIN_PASSWORD,

@@ -5,6 +5,7 @@ import { PAYMENT_DELAY_MINUTES, Reservation, ReservationStatus } from "../entiti
 import { ReservationItem } from "../entities/ReservationItem";
 import { badInput } from "../utils/errors";
 import { deleteDraft } from "./cart";
+import { issueInvoiceSafely } from "./invoices";
 import { cancelPaymentIntent, refundPaymentIntent } from "./payment";
 import { buildQuote, type QuoteRequestItem } from "./quote";
 
@@ -90,12 +91,13 @@ export async function findReservation(id: string): Promise<Reservation> {
   return reservation;
 }
 
-/** Passe une réservation en « payée ». Idempotent : sans effet si déjà payée. */
+/** Passe une réservation en « payée » et émet sa facture. Idempotent : sans effet si déjà payée. */
 export async function markPaid(id: string): Promise<void> {
-  await AppDataSource.getRepository(Reservation).update(
+  const result = await AppDataSource.getRepository(Reservation).update(
     { id, status: ReservationStatus.PENDING },
     { status: ReservationStatus.PAID, paidAt: new Date(), expiresAt: null },
   );
+  if (result.affected) await issueInvoiceSafely(id);
 }
 
 export async function markCancelled(id: string): Promise<void> {
@@ -192,7 +194,10 @@ export async function settleSucceededPayment(
     });
     return true;
   });
-  if (stillAvailable) return "paid";
+  if (stillAvailable) {
+    await issueInvoiceSafely(reservationId);
+    return "paid";
+  }
 
   await refundPaymentIntent(intent.id);
   await repo.update(reservationId, { status: ReservationStatus.CANCELLED, expiresAt: null });
