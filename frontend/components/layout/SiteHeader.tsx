@@ -3,12 +3,12 @@ import { Logo } from "./Logo";
 import { getSessionUser } from "@/lib/server/session";
 import { buttonVariants } from "@/components/ui/button";
 import { CartButton } from "@/components/cart/CartButton";
-import { LogoutButton } from "./LogoutButton";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
+import { UserMenu } from "./UserMenu";
 
-// Layout USER : l'en-tête s'adapte selon que le visiteur est connecté,
-// et affiche l'accès au back-office uniquement pour un ADMIN.
+// Layout USER : tout ce qui touche au compte (connexion, profil, réservations,
+// back-office pour un ADMIN, déconnexion) est regroupé dans le menu utilisateur.
 // Sous 768 px, la navigation passe dans un menu déroulant ; le panier reste visible.
 export async function SiteHeader() {
   const user = await getSessionUser();
@@ -20,35 +20,23 @@ export async function SiteHeader() {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-2 md:flex" aria-label="Navigation principale">
           <Link href="/catalogue" className={buttonVariants({ variant: "ghost", size: "sm" })}>
             Catalogue
           </Link>
           <ThemeToggle />
           <CartButton />
-          {user ? (
-            <>
-              <Link href="/compte" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                Mon compte
-              </Link>
-              {user.role === "ADMIN" && (
-                <Link href="/admin" className={buttonVariants({ variant: "outline", size: "sm" })}>
-                  Back-office
-                </Link>
-              )}
-              <LogoutButton />
-            </>
-          ) : (
-            <Link href="/login" className={buttonVariants({ size: "sm" })}>
-              Connexion
-            </Link>
-          )}
+          <UserMenu
+            user={user ? { firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role } : null}
+          />
         </nav>
 
         <div className="flex items-center gap-1 md:hidden">
           <ThemeToggle />
           <CartButton />
-          <MobileNav user={user ? { firstName: user.firstName, role: user.role } : null} />
+          <MobileNav
+            user={user ? { firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role } : null}
+          />
         </div>
       </div>
     </header>

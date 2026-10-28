@@ -13,23 +13,27 @@ const LOGOUT = gql`
   }
 `;
 
-export function LogoutButton() {
+// Déconnexion partagée par le bouton, le menu utilisateur et le menu mobile.
+export function useLogout() {
   const router = useRouter();
   const [logout, { loading }] = useMutation(LOGOUT);
 
+  const run = async () => {
+    await logout();
+    // Le panier reste enregistré sur le compte ; on le retire de ce navigateur (ordinateur partagé).
+    useCart.getState().clear();
+    router.push("/");
+    router.refresh();
+  };
+
+  return { logout: run, loading };
+}
+
+export function LogoutButton() {
+  const { logout, loading } = useLogout();
+
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      disabled={loading}
-      onClick={async () => {
-        await logout();
-        // Le panier reste enregistré sur le compte ; on le retire de ce navigateur (ordinateur partagé).
-        useCart.getState().clear();
-        router.push("/");
-        router.refresh();
-      }}
-    >
+    <Button variant="ghost" size="sm" disabled={loading} onClick={logout}>
       <LogOut className="h-4 w-4" />
       Déconnexion
     </Button>

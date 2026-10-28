@@ -1,19 +1,22 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { CalendarDays, LayoutDashboard, LogIn, LogOut, Menu, UserPlus, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LogoutButton } from "./LogoutButton";
+import { useLogout } from "./LogoutButton";
+import type { MenuUser } from "./UserMenu";
 
-type Props = { user: { firstName: string; role: "ADMIN" | "USER" } | null };
+type Props = { user: MenuUser | null };
 
-const itemClass = "flex h-12 items-center rounded-xl px-4 font-semibold hover:bg-snow";
+const itemClass = "flex h-12 w-full items-center gap-3 rounded-xl px-4 text-left font-semibold hover:bg-snow";
+const iconClass = "h-5 w-5 text-muted";
 
 // Menu déroulant des petits écrans : remplace la navigation de l'en-tête sous 768 px.
 export function MobileNav({ user }: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { logout, loading } = useLogout();
 
   // Referme le menu après chaque navigation.
   useEffect(() => setOpen(false), [pathname]);
@@ -46,23 +49,48 @@ export function MobileNav({ user }: Props) {
       {open && (
         <nav
           id="mobile-menu"
+          aria-label="Menu"
           className="absolute inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-surface p-3 shadow-lg"
         >
           <Link href="/catalogue" className={itemClass}>Catalogue</Link>
           {user ? (
             <>
-              <Link href="/compte" className={itemClass}>Mon compte</Link>
-              {user.role === "ADMIN" && <Link href="/admin" className={itemClass}>Back-office</Link>}
-              <div className="mt-1 flex items-center justify-between border-t border-line px-4 pt-3">
-                <span className="text-sm text-muted">Connecté : {user.firstName}</span>
-                <LogoutButton />
+              <div className="mt-1 border-t border-line px-4 pb-1 pt-3">
+                <p className="truncate text-sm font-bold">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="truncate text-xs text-muted">{user.email}</p>
               </div>
+              <Link href="/compte" className={itemClass}>
+                <CalendarDays className={iconClass} />
+                Mes réservations
+              </Link>
+              <Link href="/compte/profil" className={itemClass}>
+                <UserRound className={iconClass} />
+                Mon profil
+              </Link>
+              {user.role === "ADMIN" && (
+                <Link href="/admin" className={itemClass}>
+                  <LayoutDashboard className={iconClass} />
+                  Back-office
+                </Link>
+              )}
+              <button type="button" className={itemClass} disabled={loading} onClick={logout}>
+                <LogOut className={iconClass} />
+                Déconnexion
+              </button>
             </>
           ) : (
-            <>
-              <Link href="/login" className={itemClass}>Connexion</Link>
-              <Link href="/inscription" className={itemClass}>Créer un compte</Link>
-            </>
+            <div className="mt-1 border-t border-line pt-2">
+              <Link href="/login" className={itemClass}>
+                <LogIn className={iconClass} />
+                Connexion
+              </Link>
+              <Link href="/inscription" className={itemClass}>
+                <UserPlus className={iconClass} />
+                Créer un compte
+              </Link>
+            </div>
           )}
         </nav>
       )}
