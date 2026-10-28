@@ -3,6 +3,7 @@ import type { Server } from "node:http";
 import express from "express";
 import { AUTH_COOKIE, signToken } from "../../src/auth/token";
 import { AppDataSource } from "../../src/data-source";
+import { Customer } from "../../src/entities/Customer";
 import { Invoice } from "../../src/entities/Invoice";
 import { Reservation } from "../../src/entities/Reservation";
 import { User } from "../../src/entities/User";
@@ -86,7 +87,7 @@ describe("émission des factures", () => {
   it("reste figée si le profil ou le prix changent ensuite", async () => {
     const { owner, reservation } = await order();
     await markPaid(reservation.id);
-    await AppDataSource.getRepository(User).update(owner.id, { address: "99 avenue Nouvelle", city: "Lyon" });
+    await AppDataSource.getRepository(Customer).update(owner.customer.id, { address: "99 avenue Nouvelle", city: "Lyon" });
     await AppDataSource.query(`UPDATE "material" SET "dailyPriceCents" = 9900`);
 
     const invoice = await issueInvoice(reservation.id);

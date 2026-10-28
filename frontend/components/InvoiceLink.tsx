@@ -14,7 +14,7 @@ export function InvoiceLink({ reservationId, number, className }: Props) {
       href={invoiceUrl(reservationId)}
       target="_blank"
       rel="noopener"
-      className={cn("inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline", className)}
+      className={cn("inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-brand hover:underline", className)}
     >
       <FileText className="h-4 w-4" aria-hidden="true" />
       {number ? `Facture ${number}` : "Facture (PDF)"}

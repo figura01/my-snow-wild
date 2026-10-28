@@ -41,13 +41,28 @@ export function parseCsv(input: string, separator = detectSeparator(input)): str
     row.push(cell);
     rows.push(row);
   }
-  return rows;
+  return rows.map((r) => r.map(restoreCell));
 }
+
+/*
+ * Injection de formules : un tableur exécute une cellule qui commence par = + - @
+ * (ou une tabulation / un retour chariot). Les noms, adresses… sont saisis par les
+ * clients : à l'écriture, ces cellules sont précédées d'une apostrophe, que le tableur
+ * affiche comme du texte. À la relecture, l'apostrophe est retirée : un aller-retour
+ * export → import rend exactement les mêmes valeurs.
+ */
+const FORMULA_START = /^[=+\-@\t\r]/;
+export const neutralizeCell = (value: string) => (FORMULA_START.test(value) ? `'${value}` : value);
+const restoreCell = (value: string) => (value.startsWith("'") && FORMULA_START.test(value.slice(1)) ? value.slice(1) : value);
+
+/** « Code postal » → « code_postal », « Catégorie » → « categorie » : en-têtes tolérants. */
+export const normalizeHeader = (value: string) =>
+  value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/[\s/-]+/g, "_").replace(/_+/g, "_");
 
 const escapeCell = (value: string, separator: string) =>
   /["\r\n]/.test(value) || value.includes(separator) ? `"${value.replace(/"/g, '""')}"` : value;
 
 /** Écrit un CSV (séparateur « ; », BOM pour qu'Excel lise bien les accents). */
 export function toCsv(rows: string[][], separator = ";"): string {
-  return "﻿" + rows.map((r) => r.map((v) => escapeCell(v, separator)).join(separator)).join("\r\n") + "\r\n";
+  return "﻿" + rows.map((r) => r.map((v) => escapeCell(neutralizeCell(v), separator)).join(separator)).join("\r\n") + "\r\n";
 }

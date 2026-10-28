@@ -1,7 +1,8 @@
 import { Client } from "pg";
 import "./setup-env";
 
-// Crée la base de test au besoin, en se connectant à la base « postgres ».
+// Recrée la base de test à chaque lancement (en se connectant à la base « postgres ») :
+// le schéma est alors toujours celui des entités actuelles, même après un changement de modèle.
 export default async function globalSetup() {
   const client = new Client({
     host: process.env.DB_HOST,
@@ -11,8 +12,9 @@ export default async function globalSetup() {
     database: "postgres",
   });
   await client.connect();
-  const name = process.env.POSTGRES_DB!;
-  const exists = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [name]);
-  if (exists.rowCount === 0) await client.query(`CREATE DATABASE "${name.replace(/"/g, "")}"`);
+  const name = process.env.POSTGRES_DB!.replace(/"/g, "");
+  if (!name.endsWith("_test")) throw new Error(`Base de test inattendue : ${name}`);
+  await client.query(`DROP DATABASE IF EXISTS "${name}" WITH (FORCE)`);
+  await client.query(`CREATE DATABASE "${name}"`);
   await client.end();
 }

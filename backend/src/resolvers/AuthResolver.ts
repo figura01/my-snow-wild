@@ -1,10 +1,12 @@
 import bcrypt from "bcryptjs";
 import { GraphQLError } from "graphql";
-import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { AppDataSource } from "../data-source";
+import { Customer } from "../entities/Customer";
 import { User, UserRole } from "../entities/User";
 import type { Context } from "../auth/context";
 import { AUTH_COOKIE, cookieOptions, signToken } from "../auth/token";
+import { createAccount, customerOf } from "../services/accounts";
 import { badInput } from "../utils/errors";
 import { LoginInput, PasswordInput, ProfileInput, RegisterInput } from "./auth.inputs";
 
@@ -17,6 +19,37 @@ function startSession(ctx: Context, user: User) {
 
 @Resolver(() => User)
 export class AuthResolver {
+  // --- Identité et coordonnées : lues dans la fiche client du compte ---------------
+  @FieldResolver(() => String)
+  async firstName(@Root() user: User): Promise<string> {
+    return (await customerOf(user)).firstName;
+  }
+
+  @FieldResolver(() => String)
+  async lastName(@Root() user: User): Promise<string> {
+    return (await customerOf(user)).lastName;
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async phone(@Root() user: User): Promise<string | null> {
+    return (await customerOf(user)).phone;
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async address(@Root() user: User): Promise<string | null> {
+    return (await customerOf(user)).address;
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async postalCode(@Root() user: User): Promise<string | null> {
+    return (await customerOf(user)).postalCode;
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async city(@Root() user: User): Promise<string | null> {
+    return (await customerOf(user)).city;
+  }
+
   // Utilisateur connecté, ou null. Sert au front pour adapter l'interface.
   @Query(() => User, { nullable: true })
   async me(@Ctx() ctx: Context): Promise<User | null> {
@@ -38,14 +71,13 @@ export class AuthResolver {
 
     // Un compte créé depuis le site est toujours un client (USER) :
     // le rôle ADMIN ne s'obtient jamais par l'API publique.
-    const user = users().create({
+    const user = await createAccount({
       email,
       passwordHash: await bcrypt.hash(data.password, 12),
-      firstName: data.firstName.trim(),
-      lastName: data.lastName.trim(),
+      firstName: data.firstName,
+      lastName: data.lastName,
       role: UserRole.USER,
     });
-    await users().save(user);
     startSession(ctx, user);
     return user;
   }
@@ -77,7 +109,7 @@ export class AuthResolver {
   async updateProfile(@Arg("data") data: ProfileInput, @Ctx() ctx: Context): Promise<User> {
     const user = await users().findOneByOrFail({ id: ctx.user!.sub });
     const clean = (value?: string | null) => value?.trim() || null;
-    Object.assign(user, {
+    Object.assign(user.customer, {
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
       phone: clean(data.phone),
@@ -85,7 +117,8 @@ export class AuthResolver {
       postalCode: clean(data.postalCode),
       city: clean(data.city),
     });
-    return users().save(user);
+    await AppDataSource.getRepository(Customer).save(user.customer);
+    return user;
   }
 
   @Authorized()

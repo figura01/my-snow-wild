@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { env } from "./config/env";
 import { AppDataSource } from "./data-source";
 import { User, UserRole } from "./entities/User";
+import { createAccount } from "./services/accounts";
 
 // Crée le premier administrateur à partir des variables ADMIN_EMAIL et
 // ADMIN_PASSWORD, uniquement s'il n'existe encore aucun admin.
@@ -19,14 +20,12 @@ export async function ensureAdmin() {
     throw new Error("ADMIN_PASSWORD doit contenir au moins 12 caractères.");
   }
 
-  await repo.save(
-    repo.create({
-      email: email.trim().toLowerCase(),
-      passwordHash: await bcrypt.hash(password, 12),
-      firstName: "Admin",
-      lastName: "Snow Wild",
-      role: UserRole.ADMIN,
-    }),
-  );
+  await createAccount({
+    email,
+    passwordHash: await bcrypt.hash(password, 12),
+    firstName: "Admin",
+    lastName: "Snow Wild",
+    role: UserRole.ADMIN,
+  });
   console.log(`[seed] Administrateur créé : ${email}`);
 }

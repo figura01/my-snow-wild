@@ -3,6 +3,7 @@ import path from "node:path";
 import { DataSource } from "typeorm";
 import { env } from "./config/env";
 import { Category } from "./entities/Category";
+import { Customer } from "./entities/Customer";
 import { Invoice } from "./entities/Invoice";
 import { InvoiceCounter } from "./entities/InvoiceCounter";
 import { Maintenance } from "./entities/Maintenance";
@@ -20,7 +21,7 @@ export const AppDataSource = new DataSource({
   username: env.database.user,
   password: env.database.password,
   database: env.database.name,
-  entities: [User, Category, Material, MaterialVariant, MaterialImage, Maintenance, Reservation, ReservationItem, Invoice, InvoiceCounter],
+  entities: [User, Customer, Category, Material, MaterialVariant, MaterialImage, Maintenance, Reservation, ReservationItem, Invoice, InvoiceCounter],
   // En développement, TypeORM aligne automatiquement les tables sur les entités.
   // En production, jamais : le schéma évolue uniquement par des migrations
   // versionnées (src/migrations), appliquées au démarrage de l'API.

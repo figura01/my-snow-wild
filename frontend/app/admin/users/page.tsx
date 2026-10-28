@@ -5,7 +5,7 @@ import { serverGraphql } from "@/lib/server/graphql";
 import { getSessionUser } from "@/lib/server/session";
 import { RoleSelect } from "./RoleSelect";
 
-export const metadata = { title: "Utilisateurs" };
+export const metadata = { title: "Comptes et rôles" };
 
 type AdminUser = {
   id: string;
@@ -29,7 +29,7 @@ export default async function AdminUsersPage() {
 
   return (
     <>
-      <PageHeader title="Utilisateurs" />
+      <PageHeader title="Comptes et rôles" />
       <div className={t.wrap}>
         <table className={`${t.table} lg:min-w-[760px]`}>
           <thead className={t.thead}>

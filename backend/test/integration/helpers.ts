@@ -8,6 +8,7 @@ import { Reservation, ReservationStatus } from "../../src/entities/Reservation";
 import { ReservationItem } from "../../src/entities/ReservationItem";
 import { User, UserRole } from "../../src/entities/User";
 import { buildAppSchema } from "../../src/schema";
+import { createAccount } from "../../src/services/accounts";
 
 export const inDays = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
 
@@ -29,7 +30,7 @@ let counter = 0;
 const unique = () => `${Date.now()}-${++counter}`;
 
 export async function createUser(role: UserRole = UserRole.USER) {
-  return AppDataSource.getRepository(User).save({
+  return createAccount({
     email: `user-${unique()}@test.dev`,
     passwordHash: "x",
     firstName: "Test",

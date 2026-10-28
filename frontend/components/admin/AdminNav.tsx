@@ -11,7 +11,8 @@ const nav = [
   { href: "/admin/categories", label: "Catégories" },
   { href: "/admin/reservations", label: "Réservations" },
   { href: "/admin/maintenance", label: "Maintenance" },
-  { href: "/admin/users", label: "Utilisateurs" },
+  { href: "/admin/clients", label: "Clients" },
+  { href: "/admin/users", label: "Comptes et rôles" },
 ];
 
 // Navigation du back-office : défilement horizontal sur mobile, colonne sur desktop.

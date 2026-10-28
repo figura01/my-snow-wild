@@ -7,6 +7,7 @@ import { formatDay } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { RESERVATION_FIELDS, type Reservation, type ReservationStatus } from "@/lib/reservations";
 import { serverGraphql } from "@/lib/server/graphql";
+import { ExportReservationsButton } from "./ExportReservationsButton";
 
 export const metadata = { title: "Réservations" };
 
@@ -37,7 +38,8 @@ export default async function AdminReservationsPage({
   return (
     <>
       <PageHeader title="Réservations" />
-      <nav aria-label="Filtrer par statut" className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+      <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <nav aria-label="Filtrer par statut" className="-mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         {TABS.map((x) => (
           <Link
             key={x.key}
@@ -51,6 +53,8 @@ export default async function AdminReservationsPage({
           </Link>
         ))}
       </nav>
+        <ExportReservationsButton statuses={tab.statuses} tab={tab.key} />
+      </div>
       <div className={t.wrap}>
         <table className={`${t.table} lg:min-w-[860px]`}>
           <thead className={t.thead}>

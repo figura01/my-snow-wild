@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Customer } from "./Customer";
 
 export enum UserRole {
   ADMIN = "ADMIN",
@@ -17,9 +20,9 @@ registerEnumType(UserRole, {
   description: "Rôle de l'utilisateur : ADMIN accède au back-office.",
 });
 
-// Une même classe sert d'entité TypeORM (table « user ») et de type GraphQL.
-// Seuls les champs décorés par @Field sont exposés dans l'API :
-// le mot de passe haché n'est donc jamais renvoyé au client.
+// Compte de connexion : e-mail, mot de passe haché, rôle. Une même classe sert
+// d'entité TypeORM (table « user ») et de type GraphQL ; seuls les champs décorés
+// par @Field sont exposés : le mot de passe haché n'est jamais renvoyé.
 @ObjectType()
 @Entity()
 export class User {
@@ -34,30 +37,11 @@ export class User {
   @Column()
   passwordHash: string;
 
-  @Field()
-  @Column()
-  firstName: string;
-
-  @Field()
-  @Column()
-  lastName: string;
-
-  // --- Coordonnées de facturation enregistrées (facultatives), préremplies à la commande ---
-  @Field(() => String, { nullable: true })
-  @Column({ type: "varchar", length: 20, nullable: true })
-  phone: string | null;
-
-  @Field(() => String, { nullable: true })
-  @Column({ type: "varchar", length: 200, nullable: true })
-  address: string | null;
-
-  @Field(() => String, { nullable: true })
-  @Column({ type: "varchar", length: 10, nullable: true })
-  postalCode: string | null;
-
-  @Field(() => String, { nullable: true })
-  @Column({ type: "varchar", length: 100, nullable: true })
-  city: string | null;
+  // Identité et coordonnées : dans la fiche client (voir Customer). Les champs
+  // firstName, lastName, phone… restent exposés sur User par l'API (UserResolver).
+  @OneToOne(() => Customer, (customer) => customer.user, { eager: true, nullable: false, onDelete: "RESTRICT" })
+  @JoinColumn()
+  customer: Customer;
 
   @Field(() => UserRole)
   @Column({ type: "enum", enum: UserRole, default: UserRole.USER })

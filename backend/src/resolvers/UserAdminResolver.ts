@@ -1,6 +1,7 @@
 import { Arg, Authorized, Ctx, FieldResolver, ID, Int, Mutation, Query, Resolver, Root } from "type-graphql";
 import type { Context } from "../auth/context";
 import { AppDataSource } from "../data-source";
+import { Customer } from "../entities/Customer";
 import { Reservation } from "../entities/Reservation";
 import { User, UserRole } from "../entities/User";
 import { badInput, notFound } from "../utils/errors";
@@ -54,7 +55,11 @@ export class UserAdminResolver {
     }
     // Les réservations du client sont conservées (historique et comptabilité) :
     // la relation passe à NULL, les informations de facturation restent.
-    await users().remove(user);
+    // La fiche client (données personnelles) est supprimée avec le compte.
+    await AppDataSource.transaction(async (manager) => {
+      await manager.delete(User, { id: user.id });
+      await manager.delete(Customer, { id: user.customer.id });
+    });
     return true;
   }
 }
