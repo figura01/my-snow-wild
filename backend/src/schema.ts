@@ -5,6 +5,7 @@ import { CartResolver } from "./resolvers/CartResolver";
 import { CatalogResolver } from "./resolvers/CatalogResolver";
 import { CategoryResolver } from "./resolvers/CategoryResolver";
 import { CustomerResolver } from "./resolvers/CustomerResolver";
+import { DashboardResolver } from "./resolvers/DashboardResolver";
 import { HealthResolver } from "./resolvers/HealthResolver";
 import { ImportResolver } from "./resolvers/ImportResolver";
 import { MaintenanceResolver, VariantResolver } from "./resolvers/MaintenanceResolver";
@@ -29,6 +30,7 @@ export const buildAppSchema = () =>
       ImportResolver,
       VariantResolver,
       CustomerResolver,
+      DashboardResolver,
     ],
     authChecker,
     validate: true,

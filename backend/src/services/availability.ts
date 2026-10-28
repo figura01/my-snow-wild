@@ -29,7 +29,7 @@ export async function reservedQuantities(
     .addSelect("COALESCE(SUM(item.quantity), 0)", "reserved")
     .where("variant.id IN (:...variantIds)", { variantIds })
     .andWhere(
-      "(reservation.status = :paid OR (reservation.status = :pending AND reservation.expiresAt > now()))",
+      "NOT reservation.demo AND (reservation.status = :paid OR (reservation.status = :pending AND reservation.expiresAt > now()))",
       { paid: ReservationStatus.PAID, pending: ReservationStatus.PENDING },
     )
     .andWhere("reservation.startDate <= :end", { end })

@@ -119,7 +119,7 @@ export async function findConflicts(variantIds?: string[]): Promise<Conflict[]> 
     .where("variant.id IN (:...ids)", { ids })
     .andWhere("reservation.endDate >= :today", { today })
     .andWhere(
-      "(reservation.status = :paid OR (reservation.status = :pending AND reservation.expiresAt > now()))",
+      "NOT reservation.demo AND (reservation.status = :paid OR (reservation.status = :pending AND reservation.expiresAt > now()))",
       { paid: ReservationStatus.PAID, pending: ReservationStatus.PENDING },
     )
     .orderBy("reservation.startDate", "ASC")

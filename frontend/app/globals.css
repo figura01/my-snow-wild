@@ -33,6 +33,17 @@
   --mtn-near: #bfdbfe;
   --mtn-cap: #ffffff;
   --mtn-snow: #ffffff;
+  /* Graphiques du back-office (palette validée : contraste et daltonisme, clair et sombre). */
+  --viz-current: #1d63d6; /* saison en cours, série principale */
+  --viz-previous: #7c8596; /* saison précédente : comparaison, en retrait */
+  --viz-grid: #eef1f6;
+  --viz-axis: #c9d1de;
+  --viz-good: #0ca30c;
+  --viz-warning: #fab219;
+  --viz-serious: #ec835a;
+  --viz-critical: #d03b3b;
+  --viz-up: #15803d; /* texte d'une évolution favorable */
+  --viz-down: #b91c1c;
 }
 
 .dark {
@@ -49,6 +60,12 @@
   --mtn-near: #213861;
   --mtn-cap: #3a5687;
   --mtn-snow: #131c2e;
+  --viz-current: #4a8ef0;
+  --viz-previous: #7a7f88;
+  --viz-grid: #1d2840;
+  --viz-axis: #33415c;
+  --viz-up: #4ade80;
+  --viz-down: #f87171;
 }
 
 body {

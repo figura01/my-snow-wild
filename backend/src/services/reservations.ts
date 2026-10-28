@@ -140,7 +140,7 @@ export const userReservations = (userId: string) =>
 
 export const allReservations = (statuses?: ReservationStatus[]) =>
   AppDataSource.getRepository(Reservation).find({
-    where: { status: statuses?.length ? In(statuses) : Not(ReservationStatus.DRAFT) },
+    where: { status: statuses?.length ? In(statuses) : Not(ReservationStatus.DRAFT), demo: false },
     relations: { items: { variant: true, material: true }, user: true },
     order: { createdAt: "DESC" },
   });

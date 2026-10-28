@@ -85,6 +85,11 @@ export class Reservation {
   @Column({ type: "varchar", nullable: true })
   stripePaymentIntentId: string | null;
 
+  // Réservation fictive (npm run seed:history) : alimente le tableau de bord de démonstration,
+  // mais ne bloque jamais de matériel et n'apparaît ni dans les listes ni dans les exports.
+  @Column({ default: false })
+  demo: boolean;
+
   @Field(() => Int, { description: "Montant total en centimes." })
   @Column({ type: "int", default: 0 })
   totalCents: number;
