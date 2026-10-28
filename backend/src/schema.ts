@@ -5,6 +5,7 @@ import { CartResolver } from "./resolvers/CartResolver";
 import { CatalogResolver } from "./resolvers/CatalogResolver";
 import { CategoryResolver } from "./resolvers/CategoryResolver";
 import { HealthResolver } from "./resolvers/HealthResolver";
+import { ImportResolver } from "./resolvers/ImportResolver";
 import { MaintenanceResolver, VariantResolver } from "./resolvers/MaintenanceResolver";
 import { MaterialImageResolver, MaterialResolver } from "./resolvers/MaterialResolver";
 import { ReservationResolver } from "./resolvers/ReservationResolver";
@@ -24,6 +25,7 @@ export const buildAppSchema = () =>
       UserAdminResolver,
       MaintenanceResolver,
       MaterialImageResolver,
+      ImportResolver,
       VariantResolver,
     ],
     authChecker,

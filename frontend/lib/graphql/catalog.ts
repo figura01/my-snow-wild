@@ -9,6 +9,29 @@ export const MAINTENANCE_FIELDS = `id quantity reason expectedReturnDate started
 
 // --- Mutations (composants client) ----------------------------------------
 
+const ISSUE = "line message";
+export const PREVIEW_CATALOG_IMPORT = gql`
+  mutation PreviewCatalogImport($csv: String!) {
+    previewCatalogImport(csv: $csv) {
+      rows valid
+      materials { name action category categoryCreated dailyPriceCents sizes totalStock images }
+      errors { ${ISSUE} }
+      warnings { ${ISSUE} }
+    }
+  }
+`;
+export const IMPORT_CATALOG = gql`
+  mutation ImportCatalog($csv: String!) {
+    importCatalog(csv: $csv) { created updated categoriesCreated imagesAdded warnings { ${ISSUE} } }
+  }
+`;
+export const EXPORT_CATALOG = gql`
+  query ExportCatalog { exportCatalogCsv }
+`;
+export const IMPORT_TEMPLATE = gql`
+  query ImportTemplate { catalogImportTemplate }
+`;
+
 export const DELETE_MATERIAL_IMAGE = gql`
   mutation DeleteMaterialImage($id: ID!) {
     deleteMaterialImage(id: $id)

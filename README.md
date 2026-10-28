@@ -77,6 +77,8 @@ Pour l'autocomplétion dans l'éditeur, installe aussi les dépendances en local
 - [x] Réservations : consultation côté admin, « Mon compte » côté client
 - [x] Utilisateurs : gestion côté admin (rôles, suppression avec garde-fous)
 - [x] Maintenance du matériel par taille (motif, retour prévu, historique, alertes sur les réservations touchées)
+- [x] Import / export CSV du catalogue (aperçu et erreurs ligne par ligne, import tout-ou-rien, photos par adresse https sécurisée)
+- [x] Photos des matériels sur Cloudinary (vignette et grand format en WebP/AVIF), disque local en développement
 - [x] Tests automatisés : Jest (API, sur une base PostgreSQL de test) et Jest + React Testing Library (front)
 - [x] CI GitHub Actions : TypeScript, tests, build, images GHCR, déploiement SSH (activable)
 - [~] Déploiement sur le VPS : images de prod, migrations, compose de prod et Caddy prêts (voir « Mise en production »)
